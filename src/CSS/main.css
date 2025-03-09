@@ -1,0 +1,54 @@
+@charset "UTF-8";
+.authContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+}
+
+.formContainer {
+  background-color: rgba(219, 184, 119, 0.7);
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.828);
+}
+.formContainer h2 {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+.formContainer input {
+  padding: 15px;
+  margin: 15px 0px;
+  background-color: white;
+}
+.formContainer button {
+  padding: 10px 20px;
+  margin-top: 10px;
+  background-color: rgba(76, 175, 80, 0.7); /* Puedes cambiarlo */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.formContainer button:hover {
+  background-color: rgba(65, 150, 68, 0.7);
+}
+
+* {
+  margin: 0;
+}
+
+.login {
+  height: 100vh;
+  background-image: url("../img/trafico.jpg");
+  background-size: cover; /* Ajusta la imagen al tamaño del contenedor */
+  background-position: center; /* Centra la imagen */
+  background-repeat: no-repeat; /* No repetir la imagen */
+}
+
+/*# sourceMappingURL=main.css.map */

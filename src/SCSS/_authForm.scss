@@ -1,0 +1,41 @@
+.authContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh; //lo casi centra
+}
+.formContainer{
+    background-color: rgb(219, 184, 119, 0.7);
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items:center;
+    padding: 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.828);
+   
+    h2{
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    input{
+        padding: 15px;
+        margin: 15px 0px;
+        background-color: white;
+    }
+    
+    button {
+        padding: 10px 20px;
+        margin-top: 10px;
+        background-color: rgb(76, 175, 80, 0.7); /* Puedes cambiarlo */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+        &:hover{
+            background-color: rgb(65, 150, 68, 0.7);
+        }
+    }
+}
