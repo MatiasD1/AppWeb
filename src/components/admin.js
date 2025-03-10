@@ -6,7 +6,7 @@ const Admin = () => {
   return (
     <div>
       <h2>Bienvenido, Administrador</h2>
-      <p>Aquí puedes gestionar el contenido y los usuarios de la aplicación.</p>
+      <p>Texto para poner cosas random relacionadas con el admin.</p>
       <LogoutButton/>
     </div>
   );

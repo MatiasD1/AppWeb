@@ -6,7 +6,7 @@ const User = () => {
   return (
     <div>
       <h2>Bienvenido, Usuario</h2>
-      <p>Aquí puedes ver tu contenido personal, como tus pedidos, perfil, etc.</p>
+      <p>Texto para poner cosas random relacionadas con el usuario</p>
       <LogoutButton/>
     </div>
   );
