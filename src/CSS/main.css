@@ -1,44 +1,109 @@
 @charset "UTF-8";
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 .authContainer {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 80vh;
+  padding: 20px;
 }
 
 .formContainer {
-  background-color: rgba(219, 184, 119, 0.7);
+  background-color: rgba(237, 233, 227, 0.9);
   display: flex;
-  justify-content: center;
   flex-direction: column;
   align-items: center;
+  justify-content: center; /* Asegura que el contenido esté centrado verticalmente */
   padding: 20px;
   border-radius: 8px;
-  cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.828);
+  width: 320px;
+  max-width: 100%;
+  gap: 15px;
+  margin: auto; /* Asegura que el formulario esté centrado en el contenedor principal */
 }
-.formContainer h2 {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
+h2 {
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  margin-bottom: 5px;
+  text-align: center;
 }
-.formContainer input {
-  padding: 15px;
-  margin: 15px 0px;
-  background-color: white;
+
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Alinea los inputs y labels al centro */
+  width: 100%;
 }
-.formContainer button {
-  padding: 10px 20px;
-  margin-top: 10px;
-  background-color: rgba(76, 175, 80, 0.7); /* Puedes cambiarlo */
+
+label {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  width: 100%;
+  margin-bottom: 3px;
+}
+
+input {
+  width: 100%;
+  max-width: 260px;
+  padding: 10px;
+  margin-bottom: 8px;
+  background-color: rgba(255, 255, 255, 0.6);
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+button {
+  width: 160px;
+  padding: 8px 15px;
+  background-color: rgba(0, 0, 0, 0.8);
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: 0.3s;
+  margin-top: 8px;
 }
-.formContainer button:hover {
-  background-color: rgba(65, 150, 68, 0.7);
+button:hover {
+  background-color: rgb(0, 0, 0);
 }
 
+@media (max-width: 767px) {
+  .formContainer {
+    width: 90%;
+    max-width: 280px;
+    padding: 15px;
+    gap: 12px;
+  }
+  h2 {
+    font-size: 18px;
+  }
+  .inputContainer {
+    width: 100%;
+    justify-content: center;
+  }
+  label,
+  input {
+    width: 100%;
+  }
+  input {
+    max-width: 100%;
+    padding: 8px;
+    min-width: 220px;
+  }
+  button {
+    width: 140px;
+  }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  .formContainer {
+    width: 60%;
+    max-width: 320px;
+    padding: 20px;
+  }
+}
 * {
   margin: 0;
 }

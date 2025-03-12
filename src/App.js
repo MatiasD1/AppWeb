@@ -19,6 +19,7 @@ function App() {
         const userDoc = await getDoc(doc(db, "usuarios", user.uid));
         const role = userDoc.exists() ? userDoc.data().role : null;
         setUserRole(role);
+
       } else {
         setUserRole(null);
       }
@@ -29,6 +30,7 @@ function App() {
 
   return (
     <Router>
+
       <Routes>
         <Route path="/" element={userRole ? <Navigate to={`/${userRole}`} /> : <Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
