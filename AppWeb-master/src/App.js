@@ -9,7 +9,8 @@ import Login from "./components/login";
 import Register from "./components/register";
 import Admin from "./components/admin"; // Asegúrate de tener este componente
 import User from "./components/user"; // Asegúrate de tener este componente
-import CalendarTurnos from './components/calendarTurnos';
+import Footer from "./components/footer"; // Asegúrate de importar el Footer
+import Turnos from './components/turnos';
 
 function App() {
 
@@ -38,16 +39,18 @@ function App() {
   
   return (
     <Router>
-
-      <Routes>
-        <Route path="/" element={userRole ? <Navigate to={`/${userRole}`} /> : <Navigate to="/login" />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/admin" element={userRole === "admin" ? <Admin /> : <Navigate to="/" />} />
-        <Route path="/user" element={userRole === "user" ? <User /> : <Navigate to="/" />} />
-        <Route path="/turnos" element={<CalendarTurnos />} />
-      </Routes>
-    </Router>
+      <div className="page-container"> 
+        <Routes>
+          <Route path="/" element={userRole ? <Navigate to={`/${userRole}`} /> : <Navigate to="/login" />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/admin" element={userRole === "admin" ? <Admin /> : <Navigate to="/" />} />
+          <Route path="/user" element={userRole === "user" ? <User /> : <Navigate to="/" />} />
+          <Route path="/turnos" element={<Turnos />} />
+        </Routes>
+        <Footer />
+      </div>
+    </Router>   
   );
 }
 

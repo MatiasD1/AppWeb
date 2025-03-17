@@ -51,7 +51,8 @@ export const getUserName = async (uid) => {
   try {
     const userDoc = await getDoc(doc(db, "usuarios", uid)); // Obtiene el documento del usuario
     if (userDoc.exists()) {
-      return userDoc.data().nombre; // Devuelve el nombre del usuario
+      const { nombre, apellido } = userDoc.data(); // Desestructuración para obtener nombre y apellido
+      return { nombre, apellido }; // Devuelve tanto el nombre como el apellido
     } else {
       console.error("❌ No se encontró el documento del usuario");
       return null;

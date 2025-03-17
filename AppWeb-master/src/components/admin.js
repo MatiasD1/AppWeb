@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../firebaseConfig';
 import { getUserName } from '../auth'; // Importa la función para obtener el nombre
-import LogoutButton from './logout';
 import Header from './header';
 import { onAuthStateChanged } from 'firebase/auth'; // Para escuchar el cambio de autenticación
+import NavBar from './navBar';
 
 const Admin = () => {
   const [userName, setUserName] = useState(null); // Estado para almacenar el nombre del usuario
@@ -24,7 +24,7 @@ const Admin = () => {
 
   return (
     <div>
-      <LogoutButton />
+       <NavBar companyName="Mi Empresa" />
       {userName && <Header userName={userName} />} {/* Solo renderiza Header si userName está disponible */}
     </div>
   );
