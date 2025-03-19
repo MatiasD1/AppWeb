@@ -11,6 +11,8 @@ import Admin from "./components/admin"; // Asegúrate de tener este componente
 import User from "./components/user"; // Asegúrate de tener este componente
 import Footer from "./components/footer"; // Asegúrate de importar el Footer
 import Turnos from './components/turnos';
+import UserDetails from './components/userDetails';
+import Publicidad from './components/publicidad';
 
 function App() {
 
@@ -47,6 +49,8 @@ function App() {
           <Route path="/admin" element={userRole === "admin" ? <Admin /> : <Navigate to="/" />} />
           <Route path="/user" element={userRole === "user" ? <User /> : <Navigate to="/" />} />
           <Route path="/turnos" element={<Turnos />} />
+          <Route path="/userDetails/:id" element={<UserDetails/>}/>
+          <Route path="/publicidad" element={<Publicidad/>}/>
         </Routes>
         <Footer />
       </div>

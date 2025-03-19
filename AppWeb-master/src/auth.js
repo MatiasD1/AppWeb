@@ -27,6 +27,7 @@ export const registerUser = async (email, password) => {
     await setDoc(doc(db, "usuarios", user.uid), {
       email: email,
       role: "user",
+      aceptado:false
     });
 
     console.log("✅ Usuario guardado en Firestore");
