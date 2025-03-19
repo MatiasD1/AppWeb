@@ -14,7 +14,7 @@ const User = () => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         const { nombre, apellido } = await getUserName(user.uid);
-        setUserName(`${nombre} ${apellido}`);
+        setUserName({ nombre, apellido }); // 🔧 Guardamos un objeto en vez de una string
       } else {
         setUserName(null);
       }

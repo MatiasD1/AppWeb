@@ -1,0 +1,31 @@
+.table-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+   /* background-image: url("../img/taxi2.jpeg");
+    background-size: contain; 
+    background-position: center; 
+    background-repeat: no-repeat; */
+  
+    table {
+      width: 80%;
+      border-collapse: collapse;
+      text-align: center;
+      border: 1px solid #ddd;
+  
+      th, td {
+        padding: 10px;
+        border: 1px solid #ddd;
+      }
+  
+      th {
+        background-color: #007bff;
+        color: white;
+      }
+  
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+    }
+  }
