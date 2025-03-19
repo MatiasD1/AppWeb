@@ -1,32 +1,43 @@
 $primary-bg: #2d3748; // Fondo gris oscuro
 $primary-color: #fff; // Color de texto blanco
-$user-name-color: #e53e3e; // Color rojo para el nombre del usuario (opcional)
+$user-name-color: #e53e3e; // Color rojo para el nombre del usuario
 
 // Navbar estilos
 .navbar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  background-color: $primary-bg;
+  background-color: $primary-color;
   color: $primary-color;
   padding: 1rem;
-  
-  h1 {
-    font-size: 1.25rem; // text-xl en Tailwind
-    font-weight: bold; // text-bold en Tailwind
-  }
+  width: 100%; // Para que el navbar se expanda de margen a margen 
 
-  .user-name {
-    color: $user-name-color;
-    margin-right: 1rem; // Espaciado entre el nombre y el botón de Cerrar Sesión
-    font-weight: 600; // Ajustar el peso de la fuente si es necesario
-    font-size: 1rem; // Ajustar tamaño del texto según el diseño
-  }
+    .logo {
+      height: 40px; // Ajusta el tamaño del logo según sea necesario
+      margin-left: 3rem;
+    }
 
-  .logout-btn {
-    cursor: pointer;
-    &:hover {
-      color: #e53e3e; // Un color rojo al hacer hover sobre el botón
+  .nav-right {
+    display: flex;
+    align-items: center;
+    margin-left: auto; // Empuja esta sección a la derecha
+    margin-right: 2rem;
+
+    .user-name {
+      color: $user-name-color;
+      margin-right: 1rem; // Espacio entre el nombre y el botón
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .logout-btn {
+      display: flex; 
+      align-items: center; 
+      border-radius: 0.375rem;
+      cursor: pointer;
+
+      &:hover {
+        color: #e53e3e;
+      }
     }
   }
 }

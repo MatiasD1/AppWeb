@@ -1,3 +1,4 @@
+/*
 import React from "react";
 
 const Presentation = ({ title, description, icon: Icon, actions }) => {
@@ -22,3 +23,4 @@ const Presentation = ({ title, description, icon: Icon, actions }) => {
 };
 
 export default Presentation;
+*/

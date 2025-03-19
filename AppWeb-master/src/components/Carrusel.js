@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap"; // ✅ Importa Bootstrap completo (CSS + JS)
+import "bootstrap";
 import Carrusel1 from "../img/Carrusel1.jpg";
 import Carrusel2 from "../img/Carrusel2.jpg";
 import Carrusel3 from "../img/Carrusel3.jpg";
 
 const Carrusel = () => {
   useEffect(() => {
-    const bootstrap = require("bootstrap"); // ✅ Importa Bootstrap dinámicamente
+    const bootstrap = require("bootstrap");
     new bootstrap.Carousel("#carouselExampleAutoplaying", {
       interval: 4000,
       ride: "carousel",

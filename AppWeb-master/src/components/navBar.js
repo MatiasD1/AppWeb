@@ -1,13 +1,18 @@
 import React from "react";
 import LogoutButton from "./logout";
+import logo from "../img/wolfLogo.png"; // Ajusta la ruta del logo según tu estructura
 
-const NavBar = ({ companyName, userName }) => {
+const NavBar = ({ userName }) => {
   return (
     <nav className="navbar">
-      <h1>{companyName}</h1>
-      {/* Mostrar el nombre del usuario si está disponible */}
-      {userName && <span>{userName}</span>}
-      <LogoutButton className="logout-btn" />
+      {/* Logo alineado a la izquierda */}
+      <img src={logo} alt="Company Logo" className="logo" />
+
+      {/* Sección derecha con userName y botón de logout */}
+      <div className="nav-right">
+        {userName && <span className="user-name">{userName}</span>}
+        <LogoutButton className="logout-btn" />
+      </div>
     </nav>
   );
 };
