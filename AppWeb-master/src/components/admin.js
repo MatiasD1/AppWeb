@@ -82,9 +82,7 @@ const Admin = () => {
             ) : (
               usuarios.map((usuario) => (
                 <tr key={usuario.id}>
-                  <td>
-                    <Link to={`/userDetails/${usuario.id}`}>{usuario.id}</Link>
-                  </td>
+                  <td>{usuario.id}</td>
                   <td>{usuario.nombre}{usuario.apellido}</td>
                   <td>{usuario.email}</td>
                   <td>{usuario.licencia}</td>
@@ -100,6 +98,7 @@ const Admin = () => {
             )}
           </tbody>
         </table>
+        <Link to={`/noAceptados`}state={{usuarios}}>No Aceptados</Link>
       </div>
     </>
   );
