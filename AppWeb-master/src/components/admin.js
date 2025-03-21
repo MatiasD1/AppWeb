@@ -3,7 +3,7 @@ import { auth, db } from '../firebaseConfig';
 import { getUserName } from '../auth';
 import { onAuthStateChanged } from 'firebase/auth';
 import NavBar from './navBar';
-import { getDocs, collection, deleteDoc, doc } from 'firebase/firestore';
+import { getDocs, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 
 const Admin = () => {
@@ -56,9 +56,19 @@ const Admin = () => {
     }
   };
 
+  const Ascenso = async (id) => {
+    try {
+      const userRef = doc(db, "usuarios", id); // Referencia al documento
+      await updateDoc(userRef, { role: "admin" }); // Actualiza el campo 'role'
+      console.log("Usuario ascendido a admin");
+    } catch (error) {
+      console.error("Error al actualizar el documento", error);
+    }
+  };
+
   return (
     <>
-      <div className='user-container'>
+      <div>
         <NavBar companyName="Mi Empresa" userName={userName}/>
       </div>
       <div className='table-container'>
@@ -66,6 +76,8 @@ const Admin = () => {
           <thead>
             <tr>
               <th>Id</th>
+              <th>Ascenso</th>
+              <th>Rol</th>
               <th>Nombre</th>
               <th>Email</th>
               <th>Licencia</th>
@@ -83,6 +95,8 @@ const Admin = () => {
               usuarios.map((usuario) => (
                 <tr key={usuario.id}>
                   <td>{usuario.id}</td>
+                  <td><button onClick={()=>Ascenso(usuario.id)}>Ascender</button></td>
+                  <td>{usuario.role}</td>
                   <td>{usuario.nombre}{usuario.apellido}</td>
                   <td>{usuario.email}</td>
                   <td>{usuario.licencia}</td>
@@ -97,9 +111,11 @@ const Admin = () => {
               ))
             )}
           </tbody>
+          <Link to={`/noAceptados`}state={{usuarios}}>No Aceptados</Link>
         </table>
-        <Link to={`/noAceptados`}state={{usuarios}}>No Aceptados</Link>
+        
       </div>
+      
     </>
   );
 };

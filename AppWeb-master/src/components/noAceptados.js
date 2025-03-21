@@ -1,7 +1,7 @@
 import React, {  useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom';
 import { db } from '../firebaseConfig';
-import { doc, deleteDoc } from 'firebase/firestore';
+import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
 
 const NoAceptados = () => {
 
@@ -32,6 +32,18 @@ const NoAceptados = () => {
           }
     }
 
+    const AceptarUsuario = async (id) =>{
+      try{
+        if (window.confirm("Estas seguro de aceptar a este usuario?")){
+          const userRef = doc(db,"usuarios",id);
+          await updateDoc(userRef, { aceptado: true });
+          console.log("Usuario aceptado");
+        }
+      }catch(error){
+        console.error("Error al aceptar al usuario");
+      }
+    }
+
     return (
         <>
         <h1>Pendientes de Aceptación</h1>
@@ -45,7 +57,8 @@ const NoAceptados = () => {
               <th>Licencia</th>
               <th>Marca del Auto</th>
               <th>Modelo del Auto</th>
-              <th>Baja</th>
+              <th>Aceptar</th>
+              <th>Rechazar</th>
             </tr>
           </thead>
           <tbody>
@@ -58,6 +71,7 @@ const NoAceptados = () => {
                   <td>{usuario.licencia}</td>
                   <td>{usuario.marcaAuto}</td>
                   <td>{usuario.modeloAuto}</td>
+                  <td><button onClick={()=>AceptarUsuario(usuario.id)} style={{color:"green"}}>Aceptar</button></td>
                   <td>
                     <button onClick={() => RechazarUsuario(usuario.id)} style={{ color: "red" }}>
                       Rechazar
