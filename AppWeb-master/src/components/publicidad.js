@@ -1,13 +1,15 @@
 import React from 'react'
-import UserDetails from './userDetails'
+import { Link } from 'react-router-dom';
+import UserDetails from './userDetails';
 
-const publicidad = () => {
+const Publicidad = () => {
 
   return (
     <div>
+      <Link to={`/user`}>Volver</Link>
       <UserDetails/>
     </div>
   )
 }
 
-export default publicidad
+export default Publicidad;

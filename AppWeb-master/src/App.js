@@ -13,6 +13,8 @@ import Footer from "./components/footer"; // Asegúrate de importar el Footer
 import Turnos from './components/turnos';
 import UserDetails from './components/userDetails';
 import Publicidad from './components/publicidad';
+import NoAceptados from './components/noAceptados';
+import UploadImage from './components/uploadImage';
 
 function App() {
 
@@ -51,6 +53,8 @@ function App() {
           <Route path="/turnos" element={<Turnos />} />
           <Route path="/userDetails/:id" element={<UserDetails/>}/>
           <Route path="/publicidad" element={<Publicidad/>}/>
+          <Route path="/noAceptados" element={<NoAceptados/>}/>
+          <Route path="/uploadImage" element={<UploadImage/>}/>
         </Routes>
         <Footer />
       </div>

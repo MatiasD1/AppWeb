@@ -3,6 +3,7 @@ import { db } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../auth";
 import { setDoc, doc } from "firebase/firestore";
+import { Link } from "react-router-dom";
 
 const Register = () => {
   const [step, setStep] = useState(1); // Paso en el que va el usuario
@@ -18,6 +19,7 @@ const Register = () => {
     aliasBancario: "",
     aceptaTerminos: false,
     password: "",
+    aceptado:false
   });
   const [message, setMessage] = useState(""); // Almacena el mensaje de error para mostrar al final si el registro falla 
   const navigate = useNavigate();
@@ -130,6 +132,7 @@ const Register = () => {
           </>
         )}
       </form>
+      <div>Ya estás registrado? <Link to={`/login`}>Inicia sesión aquí</Link></div>
     </div>
   );
 };
