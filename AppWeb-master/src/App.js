@@ -10,9 +10,9 @@ import Register from "./components/register";
 import Admin from "./components/admin"; // Asegúrate de tener este componente
 import User from "./components/user"; // Asegúrate de tener este componente
 import Footer from "./components/footer"; // Asegúrate de importar el Footer
-import Turnos from './components/turnos';
 import UserDetails from './components/userDetails';
 import Publicidad from './components/publicidad';
+import SolicitudPublicitar from './components/turnos';
 
 function App() {
 
@@ -48,7 +48,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/admin" element={userRole === "admin" ? <Admin /> : <Navigate to="/" />} />
           <Route path="/user" element={userRole === "user" ? <User /> : <Navigate to="/" />} />
-          <Route path="/turnos" element={<Turnos />} />
+          <Route path="/solicitar-publicidad" element={<SolicitudPublicitar />} />
           <Route path="/userDetails/:id" element={<UserDetails/>}/>
           <Route path="/publicidad" element={<Publicidad/>}/>
         </Routes>

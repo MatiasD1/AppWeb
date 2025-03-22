@@ -20,15 +20,15 @@ const Carrusel = () => {
         <div className="carousel-inner">
           <div className="carousel-item active">
             <img src={Carrusel1} className="d-block w-100 img-carrusel" alt="Foto del exterior" />
-            <p className="textoCarruselInicio">Texto1</p>
+            <p className="textoCarruselInicio">¿Listo para ganar más con cada viaje?</p>
           </div>
           <div className="carousel-item">
             <img src={Carrusel2} className="d-block w-100 img-carrusel" alt="Foto de la pieza" />
-            <p className="textoCarruselInicio">Texto2</p>
+            <p className="textoCarruselInicio">Convertí tu taxi en un espacio publicitario</p>
           </div>
           <div className="carousel-item">
             <img src={Carrusel3} className="d-block w-100 img-carrusel" alt="Foto de la sala" />
-            <p className="textoCarruselInicio">Texto3</p>
+            <p className="textoCarruselInicio">Y pedí un turno para colocar la calcomanía</p>
           </div>
         </div>
       </div>

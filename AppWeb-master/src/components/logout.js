@@ -6,7 +6,7 @@ const handleLogout = async () => {
     await logoutUser();
 };
 
-    return <button onClick={handleLogout}>Cerrar Sesión</button>;
+    return <button className="logout-btn" onClick={handleLogout}>Cerrar Sesión</button>;
 };
 
 export default LogoutButton;

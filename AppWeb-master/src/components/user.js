@@ -32,7 +32,7 @@ const User = () => {
           <button className="button-user one" onClick={() => alert("Ir a publicidad")}>
             Contratar Publicidad
           </button>
-          <button className="button-user two" onClick={() => navigate("/turnos")}>
+          <button className="button-user two" onClick={() => navigate("/solicitar-publicidad")}>
             Pedir Turno
           </button>
         </div>
