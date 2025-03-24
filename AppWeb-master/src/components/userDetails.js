@@ -47,7 +47,9 @@ const UserDetails = () =>{
                 <label>Modelo de Auto:</label>
                 <input type="text" defaultValue={user.modeloAuto} />
             </form>
-            <UploadImage user={user}/>
+            <br/>
+
+            <div className="formContainer"><UploadImage user={user}/></div>
         </div>
     )
 }
