@@ -159,6 +159,8 @@ input {
 }
 
 .footer {
+  display: flex;
+  flex-direction: column-reverse;
   width: 100%;
   background-color: white;
   color: grey;
@@ -167,6 +169,21 @@ input {
   font-size: 0.875rem;
   position: relative;
   bottom: 0;
+}
+.footer .columnaFooter {
+  display: flex;
+  flex-direction: column;
+  font-family: "Khula", sans-serif;
+}
+.footer .columnaFooter .logosRedes {
+  display: flex;
+  gap: 50px;
+  margin: 20px auto;
+  max-width: 300px;
+}
+.footer .columnaFooter .logoRed img {
+  width: 50px;
+  height: 50px;
 }
 .footer .copyright {
   font-size: 0.875rem;
@@ -296,6 +313,37 @@ input {
 }
 .button-user.two:hover {
   background-color: #d42020;
+}
+
+.solicitud-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 20px;
+}
+
+.button-solicitar {
+  padding: 10px 20px;
+  background-color: #9e0039;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button-solicitar:hover {
+  background-color: #6f0000;
+}
+
+.button-solicitar:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+p {
+  font-size: 16px;
+  margin-top: 10px;
 }
 
 /*# sourceMappingURL=main.css.map */

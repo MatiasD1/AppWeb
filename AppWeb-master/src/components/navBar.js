@@ -1,8 +1,10 @@
 import React from "react";
 import LogoutButton from "./logout";
 import logo from "../img/wolfLogo.png"; // Ajusta la ruta del logo según tu estructura
+import { useUser } from "../userContext";
 
-const NavBar = ({ userName }) => {
+const NavBar = () => {
+  const userName = useUser();
   console.log("🛠 userName en NavBar:", userName);
   return (
     <nav className="navbar">

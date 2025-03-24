@@ -1,4 +1,7 @@
 .solicitud-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
     text-align: center;
     padding: 20px;
   }
@@ -10,7 +13,7 @@
     border: none;
     cursor: pointer;
     transition: background-color 0.3s;
-  }
+  } 
   
   .button-solicitar:hover {
     background-color: #6f0000;

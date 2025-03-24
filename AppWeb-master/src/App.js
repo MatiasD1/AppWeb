@@ -12,7 +12,8 @@ import User from "./components/user"; // Asegúrate de tener este componente
 import Footer from "./components/footer"; // Asegúrate de importar el Footer
 import UserDetails from './components/userDetails';
 import Publicidad from './components/publicidad';
-import SolicitudPublicitar from './components/turnos';
+import { UserProvider } from './userContext';
+import SolicitudTurno from './components/solicitudTurno';
 
 function App() {
 
@@ -40,21 +41,23 @@ function App() {
   }
   
   return (
-    <Router>
-      <div className="page-container"> 
-        <Routes>
-          <Route path="/" element={userRole ? <Navigate to={`/${userRole}`} /> : <Navigate to="/login" />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/admin" element={userRole === "admin" ? <Admin /> : <Navigate to="/" />} />
-          <Route path="/user" element={userRole === "user" ? <User /> : <Navigate to="/" />} />
-          <Route path="/solicitar-publicidad" element={<SolicitudPublicitar />} />
-          <Route path="/userDetails/:id" element={<UserDetails/>}/>
-          <Route path="/publicidad" element={<Publicidad/>}/>
-        </Routes>
-        <Footer />
-      </div>
-    </Router>   
+    <UserProvider>
+      <Router>
+        <div className="page-container"> 
+          <Routes>
+            <Route path="/" element={userRole ? <Navigate to={`/${userRole}`} /> : <Navigate to="/login" />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/admin" element={userRole === "admin" ? <Admin /> : <Navigate to="/" />} />
+            <Route path="/user" element={userRole === "user" ? <User /> : <Navigate to="/" />} />
+            <Route path="/solicitar-publicidad" element={<SolicitudTurno />} />
+            <Route path="/userDetails/:id" element={<UserDetails/>}/>
+            <Route path="/publicidad" element={<Publicidad/>}/>
+          </Routes>
+          <Footer />
+        </div>
+      </Router>   
+    </UserProvider>
   );
 }
 
