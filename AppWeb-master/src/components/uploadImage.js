@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+/*import { useState, useEffect } from "react";
 import emailjs from "@emailjs/browser";
 
 const UploadImage = ({ user }) => {
@@ -84,3 +84,4 @@ const UploadImage = ({ user }) => {
 };
 
 export default UploadImage;
+*/
