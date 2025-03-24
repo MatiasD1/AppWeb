@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { db } from "../firebaseConfig";
 import UploadImage from "./uploadImage";
+import NavBar from "./navBar";
+import { Link } from "react-router-dom";
 
 const UserDetails = () =>{
     const [user, setUser] = useState(null);
@@ -27,7 +29,9 @@ const UserDetails = () =>{
 
     return (
         <div >
-            <h2>Detalles de {user.nombre} {user.apellido}</h2>
+            <NavBar />
+            <Link to={`/user`}>Volver</Link>
+            <h2>Detalles del Usuario</h2>
             <br/>
             <form className="formContainer">
                 <label>Nombre:</label>
