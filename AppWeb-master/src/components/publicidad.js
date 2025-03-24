@@ -1,7 +1,7 @@
 import React from 'react'
-import UserDetails from './userDetails'
+import UserDetails from './userDetails';
 
-const publicidad = () => {
+const Publicidad = () => {
 
   return (
     <div>
@@ -10,4 +10,4 @@ const publicidad = () => {
   )
 }
 
-export default publicidad
+export default Publicidad;
