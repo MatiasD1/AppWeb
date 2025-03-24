@@ -1,11 +1,15 @@
 import { doc, getDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { db } from "../firebaseConfig";
+import UploadImage from "./uploadImage";
+import NavBar from "./navBar";
+import { Link } from "react-router-dom";
 
 const UserDetails = () =>{
-    const {id} = useParams();
     const [user, setUser] = useState(null);
+    const location = useLocation();
+    const id = location.state.id;
 
     useEffect(()=>{
         const fetchUser = async () =>{
@@ -25,7 +29,9 @@ const UserDetails = () =>{
 
     return (
         <div >
-            <h2>Detalles de {user.nombre} {user.apellido}</h2>
+            <NavBar />
+            <Link to={`/user`}>Volver</Link>
+            <h2>Detalles del Usuario</h2>
             <br/>
             <form className="formContainer">
                 <label>Nombre:</label>
@@ -34,7 +40,16 @@ const UserDetails = () =>{
                 <input type="text" defaultValue={user.apellido}></input>
                 <label>Email:</label>
                 <input type="email" defaultValue={user.email} />
+                <label>Licencia:</label>
+                <input type="number" defaultValue={user.licencia} />
+                <label>Marca de auto:</label>
+                <input type="text" defaultValue={user.marcaAuto} />
+                <label>Modelo de Auto:</label>
+                <input type="text" defaultValue={user.modeloAuto} />
             </form>
+            <br/>
+
+            <div className="formContainer"><UploadImage user={user}/></div>
         </div>
     )
 }

@@ -14,6 +14,8 @@ import UserDetails from './components/userDetails';
 import Publicidad from './components/publicidad';
 import { UserProvider } from './userContext';
 import SolicitudTurno from './components/solicitudTurno';
+import NoAceptados from './components/noAceptados';
+import UploadImage from './components/uploadImage';
 
 function App() {
 
@@ -53,6 +55,8 @@ function App() {
             <Route path="/solicitar-publicidad" element={<SolicitudTurno />} />
             <Route path="/userDetails/:id" element={<UserDetails/>}/>
             <Route path="/publicidad" element={<Publicidad/>}/>
+            <Route path="/noAceptados" element={<NoAceptados/>}/>
+            <Route path="/uploadImage" element={<UploadImage/>}/>
           </Routes>
           <Footer />
         </div>

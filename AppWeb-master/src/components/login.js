@@ -6,6 +6,7 @@ import { db } from "../firebaseConfig";
 import AuthForm from "./authForm"; // Importa el componente reutilizable
 import { auth } from "../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState(""); // Valores que ingresa el usuario
@@ -74,6 +75,7 @@ const Login = () => {
   ];
 
   return (
+    <>
     <div className="login">
       <AuthForm                   // Envía la info al componente AuthForm para confeccionar el formulario 
         title="Iniciar sesión"
@@ -82,6 +84,8 @@ const Login = () => {
         fields={fields}  // Envía los campos del array fields 
       />
     </div>
+    <div>No Estás registrado? <Link to={`/register`}>Registrate Aquí</Link></div>
+    </>
   );
 };
 
