@@ -93,7 +93,7 @@ input {
     padding: 8px;
     min-width: 220px;
   }
-  button {
+  .buttonForm {
     width: 140px;
   }
 }
@@ -145,12 +145,22 @@ input {
   align-items: center;
   border-radius: 0.375rem;
   cursor: pointer;
+  color: white;
+  font-size: 1rem;
+  padding: 0.3rem 0.7rem;
+  transition: background-color 0.2s ease-in-out;
+  border: none;
+  background-color: #000000;
+  justify-content: center;
+  align-items: center;
 }
 .navbar .nav-right .logout-btn:hover {
-  color: #e53e3e;
+  background-color: #e53e3e;
 }
 
 .footer {
+  display: flex;
+  flex-direction: column-reverse;
   width: 100%;
   background-color: white;
   color: grey;
@@ -159,6 +169,21 @@ input {
   font-size: 0.875rem;
   position: relative;
   bottom: 0;
+}
+.footer .columnaFooter {
+  display: flex;
+  flex-direction: column;
+  font-family: "Khula", sans-serif;
+}
+.footer .columnaFooter .logosRedes {
+  display: flex;
+  gap: 50px;
+  margin: 20px auto;
+  max-width: 300px;
+}
+.footer .columnaFooter .logoRed img {
+  width: 50px;
+  height: 50px;
 }
 .footer .copyright {
   font-size: 0.875rem;
@@ -190,45 +215,16 @@ input {
   top: 5%;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.6);
   color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   padding: 10px 20px;
   border-radius: 5px;
-  font-size: 1.5rem;
+  font-size: 3rem;
+  font-weight: 600;
+  line-height: 1.2;
   text-align: center;
   width: 80%;
   max-width: 600px;
-}
-
-.button-group {
-  position: absolute;
-  bottom: 5%;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 1rem;
-}
-
-.button {
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.375rem;
-  color: white;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-  border: none;
-}
-.button.blue {
-  background-color: #5c5c5c;
-}
-.button.blue:hover {
-  background-color: #3f3f3f;
-}
-.button.green {
-  background-color: #e53e3e;
-}
-.button.green:hover {
-  background-color: #c03434;
 }
 
 /* 📌 Responsividad */
@@ -306,17 +302,48 @@ input {
 }
 
 .button-user.one {
-  background-color: #5c5c5c;
+  background-color: #020202;
 }
 .button-user.one:hover {
-  background-color: #3f3f3f;
+  background-color: #242424;
 }
 
 .button-user.two {
   background-color: #e53e3e;
 }
 .button-user.two:hover {
-  background-color: #c03434;
+  background-color: #d42020;
+}
+
+.solicitud-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 20px;
+}
+
+.button-solicitar {
+  padding: 10px 20px;
+  background-color: #9e0039;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button-solicitar:hover {
+  background-color: #6f0000;
+}
+
+.button-solicitar:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+p {
+  font-size: 16px;
+  margin-top: 10px;
 }
 
 .table-container {
@@ -350,4 +377,5 @@ input {
     }
   }
 }
+
 /*# sourceMappingURL=main.css.map */

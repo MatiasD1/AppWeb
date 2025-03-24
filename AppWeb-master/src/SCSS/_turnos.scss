@@ -1,0 +1,31 @@
+.solicitud-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .button-solicitar {
+    padding: 10px 20px;
+    background-color: #9e0039;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  } 
+  
+  .button-solicitar:hover {
+    background-color: #6f0000;
+  }
+  
+  .button-solicitar:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  p {
+    font-size: 16px;
+    margin-top: 10px;
+  }
+  

@@ -31,7 +31,7 @@ const AuthForm = ({ title, buttonText, handleSubmit, fields = [], termsAccepted,
             <label htmlFor="terms">Acepto los términos y condiciones</label>
           </div>
         )}
-        <button type="submit">{buttonText}</button>
+        <button className="buttonForm" type="submit">{buttonText}</button>
       </form>
     </div>
   );
