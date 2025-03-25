@@ -53,7 +53,7 @@ function App() {
             <Route path="/admin" element={userRole === "admin" ? <Admin /> : <Navigate to="/" />} />
             <Route path="/user" element={userRole === "user" ? <User /> : <Navigate to="/" />} />
             <Route path="/solicitar-publicidad" element={<SolicitudTurno />} />
-            <Route path="/userDetails/:id" element={<UserDetails/>}/>
+            <Route path="/userDetails" element={<UserDetails/>}/>
             <Route path="/publicidad" element={<Publicidad/>}/>
             <Route path="/noAceptados" element={<NoAceptados/>}/>
             <Route path="/uploadImage" element={<UploadImage/>}/>
