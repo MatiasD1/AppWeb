@@ -14,6 +14,7 @@ import UserDetails from './components/userDetails';
 import Publicidad from './components/publicidad';
 import { UserProvider } from './userContext';
 import SolicitudTurno from './components/solicitudTurno';
+import SubirFoto from './components/subirFoto';
 import NoAceptados from './components/noAceptados';
 import UploadImage from './components/uploadImage';
 
@@ -52,7 +53,8 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/admin" element={userRole === "admin" ? <Admin /> : <Navigate to="/" />} />
             <Route path="/user" element={userRole === "user" ? <User /> : <Navigate to="/" />} />
-            <Route path="/solicitar-publicidad" element={<SolicitudTurno />} />
+            <Route path="/solicitudTurno" element={<SolicitudTurno />} />
+            <Route path="/subirFoto" element={<SubirFoto />} />
             <Route path="/userDetails/:id" element={<UserDetails/>}/>
             <Route path="/publicidad" element={<Publicidad/>}/>
             <Route path="/noAceptados" element={<NoAceptados/>}/>

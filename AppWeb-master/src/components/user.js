@@ -13,11 +13,11 @@ const User = () => {
       <div className="content">
         <Carrusel />
         <div className="button-group">
-          <button className="button-user one" onClick={() => alert("Ir a publicidad")}>
-            Contratar Publicidad
-          </button>
-          <button className="button-user two" onClick={() => navigate("/solicitar-publicidad")}>
+          <button className="button-user one" onClick={() => navigate("/solicitudTurno")}>
             Pedir Turno
+          </button>
+          <button className="button-user two" onClick={() => navigate("/subirFoto")}>
+            Subir Foto
           </button>
         </div>
       </div>
