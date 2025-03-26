@@ -32,7 +32,7 @@ const User = () => {
           <button className="button-user one" onClick={() => navigate("/solicitudTurno")}>
             Pedir Turno
           </button>
-          <button className="button-user two" onClick={() => navigate("/uploadImage")}>
+          <button className="button-user two" onClick={() => navigate("/uploadImage", { state:{id}})}>
             Subir Foto
           </button>
         </div>

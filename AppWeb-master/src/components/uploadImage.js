@@ -1,9 +1,33 @@
 import { useState, useEffect } from "react";
 import emailjs from "@emailjs/browser";
+import NavBar from "./navBar";
+import { Link, useLocation } from "react-router-dom";
+import { db } from "../firebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
 
-const UploadImage = ({ user }) => {
+const UploadImage = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [user, setUser] =useState(null);
+
+  const location = useLocation();
+  const id = location.state.id;
+
+  useEffect(()=>{
+    
+    const fetchUser = async () =>{
+        const userRef =doc(db,"usuarios", id);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()){
+            setUser(userSnap.data());
+        }else{
+            console.log("No existe el usuario");
+        }
+    };
+    if (id){
+        fetchUser();
+    }}, [id]);
+
 
   // Cargar imagen del localStorage si ya existe
   useEffect(() => {
@@ -70,16 +94,25 @@ const UploadImage = ({ user }) => {
     alert("Imagen eliminada.");
   }
 
+  if (!user) return <p>Cargando usuario...</p>
+
   return (
+    <>
     <div>
-      <h2>Subir Imagen</h2>
-      <p>Usuario: {user?.nombre}</p>
-      <p>Email: {user?.email}</p>
-      <input type="file" accept="image/*" onChange={handleFileChange} />
-      {preview && <img src={preview} alt="Vista previa" width="200" />}
-      <button onClick={handleUpload}>Enviar mail</button>
-      {preview && <button onClick={handleDelete}>Eliminar Imagen</button>}
+      <div><NavBar/><Link to={`/user`}>Volver</Link></div>
+      <h2>Detalles del Usuario</h2>
+      <div className="formContainer">
+        <h3>Subir Imagen</h3>
+        <p>Usuario: {user?.nombre}</p>
+        <p>Email: {user?.email}</p>
+        <input type="file" accept="image/*" onChange={handleFileChange} />
+        {preview && <img src={preview} alt="Vista previa" width="200" />}
+        <button onClick={handleUpload}>Enviar mail</button>
+        {preview && <button onClick={handleDelete}>Eliminar Imagen</button>}
+      </div>
+      
     </div>
+    </>
   );
 };
 

@@ -114,15 +114,17 @@ const Admin = () => {
           <thead>
             <tr>
               <th>ID</th>
-              <th>Ascenso</th>
+
+          {/* <th>Ascenso</th>
               <th>Descenso</th>
+          */}
               <th>Rol</th>
               <th>Nombre</th>
               <th>Email</th>
               <th>Licencia</th>
               <th>Marca del Auto</th>
-              <th>Modelo del Auto</th>
-              <th>Baja</th>
+              <th>Modelo</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -134,12 +136,14 @@ const Admin = () => {
               usuarios.map((usuario) => (
                 <tr key={usuario.id}>
                   <td>{usuario.id}</td>
-                  <td>
+                 {/* <td>
                     <button onClick={() => Ascenso(usuario.id)}>Ascender</button>
                   </td>
                   <td>
                     <button onClick={() => Descenso(usuario.id)}>Descender</button>
                   </td>
+                  */}
+
                   <td>{usuario.role}</td>
                   <td>{usuario.nombre} {usuario.apellido}</td>
                   <td>{usuario.email}</td>
@@ -147,9 +151,8 @@ const Admin = () => {
                   <td>{usuario.marcaAuto}</td>
                   <td>{usuario.modeloAuto}</td>
                   <td>
-                    <button
+                    <button className="botonBajaUsuario"
                       onClick={() => ManejarBaja(usuario.id)}
-                      style={{ color: "red" }}
                     >
                       Dar de baja
                     </button>
@@ -159,7 +162,7 @@ const Admin = () => {
             )}
           </tbody>
         </table>
-        <Link to={`/noAceptados`} state={{ usuarios }}>
+        <Link to={`/noAceptados`} state={{ usuarios }} className="botonNoAceptados">
           No Aceptados
         </Link>
       </div>
