@@ -1,7 +1,6 @@
 import NavBar from "./navBar";
 import Carrusel from "./Carrusel";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { auth } from "../firebaseConfig";
@@ -30,11 +29,11 @@ const User = () => {
       <div className="content">
         <Carrusel />
         <div className="button-group">
-          <Link className="button-user one" to={`/publicidad`} state={{id}} >
-            Contratar Publicidad
-          </Link>
-          <button className="button-user two" onClick={() => navigate("/solicitar-publicidad")}>
+          <button className="button-user one" onClick={() => navigate("/solicitudTurno", { state:{id}})}>
             Pedir Turno
+          </button>
+          <button className="button-user two" onClick={() => navigate("/uploadImage", { state:{id}})}>
+            Subir Foto
           </button>
         </div>
       </div>

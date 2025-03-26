@@ -1,5 +1,6 @@
 @charset "UTF-8";
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 .authContainer {
   display: flex;
   justify-content: center;
@@ -9,7 +10,7 @@
 }
 
 .formContainer {
-  background-color: rgba(237, 233, 227, 0.9);
+  background-color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -313,7 +314,6 @@ input {
 }
 .button-user.two:hover {
   background-color: #d42020;
-
 }
 
 .solicitud-container {
@@ -322,6 +322,10 @@ input {
   flex-direction: column;
   text-align: center;
   padding: 20px;
+}
+
+.solicitudContainerBody {
+  display: inline-block;
 }
 
 .button-solicitar {
@@ -345,6 +349,38 @@ input {
 p {
   font-size: 16px;
   margin-top: 10px;
+}
+
+.table-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+ /* background-image: url("../img/taxi2.jpeg");
+  background-size: contain; 
+  background-position: center; 
+  background-repeat: no-repeat; */
+
+  table {
+    width: 80%;
+    border-collapse: collapse;
+    text-align: center;
+    border: 1px solid #ddd;
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+  }
 }
 
 /*# sourceMappingURL=main.css.map */

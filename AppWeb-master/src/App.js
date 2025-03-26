@@ -47,16 +47,22 @@ function App() {
       <Router>
         <div className="page-container"> 
           <Routes>
+            {/* Rutas generales */}
             <Route path="/" element={userRole ? <Navigate to={`/${userRole}`} /> : <Navigate to="/login" />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/admin" element={userRole === "admin" ? <Admin /> : <Navigate to="/" />} />
+            <Route path="/login" element={userRole ? <Navigate to={`/${userRole}`} /> : <Login />} />
+            <Route path="/register" element={userRole ? <Navigate to={`/${userRole}`} /> : <Register />} />
+            
+            {/* Rutas solo para user */}
             <Route path="/user" element={userRole === "user" ? <User /> : <Navigate to="/" />} />
-            <Route path="/solicitar-publicidad" element={<SolicitudTurno />} />
-            <Route path="/userDetails" element={<UserDetails/>}/>
-            <Route path="/publicidad" element={<Publicidad/>}/>
-            <Route path="/noAceptados" element={<NoAceptados/>}/>
-            <Route path="/uploadImage" element={<UploadImage/>}/>
+            <Route path="/solicitudTurno" element={userRole === "user" ? <SolicitudTurno /> : <Navigate to="/" />} />
+            <Route path="/uploadImage" element={userRole === "user" ? <UploadImage /> : <Navigate to="/" />} />
+
+            {/* Rutas solo para admin */}
+            <Route path="/admin" element={userRole === "admin" ? <Admin /> : <Navigate to="/" />} />
+            <Route path="/userDetails/:id" element={userRole === "admin" ? <UserDetails /> : <Navigate to="/" />} />
+            <Route path="/userDetails" element={userRole === "admin" ? <UserDetails /> : <Navigate to="/" />} />
+            <Route path="/publicidad" element={userRole === "admin" ? <Publicidad /> : <Navigate to="/" />} />
+            <Route path="/noAceptados" element={userRole === "admin" ? <NoAceptados /> : <Navigate to="/" />} />
           </Routes>
           <Footer />
         </div>

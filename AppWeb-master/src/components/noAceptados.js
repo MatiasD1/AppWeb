@@ -2,6 +2,8 @@ import React, {  useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom';
 import { db } from '../firebaseConfig';
 import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import NavBar from './navBar';
+import { Link } from 'react-router-dom';
 
 const NoAceptados = () => {
 
@@ -46,7 +48,7 @@ const NoAceptados = () => {
 
     return (
         <>
-        <h1>Pendientes de Aceptación</h1>
+        <NavBar/><Link to={`/admin`}>Volver</Link>
         <div className='table-container'>
         <table>
           <thead>
@@ -72,11 +74,7 @@ const NoAceptados = () => {
                   <td>{usuario.marcaAuto}</td>
                   <td>{usuario.modeloAuto}</td>
                   <td><button onClick={()=>AceptarUsuario(usuario.id)} style={{color:"green"}}>Aceptar</button></td>
-                  <td>
-                    <button onClick={() => RechazarUsuario(usuario.id)} style={{ color: "red" }}>
-                      Rechazar
-                    </button>
-                  </td>
+                  <td><button onClick={() => RechazarUsuario(usuario.id)} style={{ color: "red" }}>Rechazar</button></td>
                 </tr>            
               ))
             }
