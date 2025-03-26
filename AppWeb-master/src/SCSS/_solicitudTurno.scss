@@ -5,7 +5,10 @@
     text-align: center;
     padding: 20px;
   }
-  
+  .solicitudContainerBody{// Para que los elementos no ocupen todo el ancho de la pantalla
+    display: inline-block;
+  }
+
   .button-solicitar {
     padding: 10px 20px;
     background-color: #9e0039;

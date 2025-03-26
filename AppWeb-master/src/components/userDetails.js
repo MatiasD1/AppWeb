@@ -1,28 +1,31 @@
 import { doc, getDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import { db } from "../firebaseConfig";
 import UploadImage from "./uploadImage";
 import NavBar from "./navBar";
 import { Link } from "react-router-dom";
 
-const UserDetails = () =>{
-    const [user, setUser] = useState(null);
-    const location = useLocation();
-    const id = location.state.id;
-
+const UserDetails = ({id}) =>{
+    const [user, setUser] = useState(null);    
+    
     useEffect(()=>{
+    
+        console.log("ID recibido en UserDetails:", id);
         const fetchUser = async () =>{
             const userRef =doc(db,"usuarios", id);
             const userSnap = await getDoc(userRef);
 
             if (userSnap.exists()){
+                console.log("Documento encontrado",userSnap.data());
                 setUser(userSnap.data());
             }else{
                 console.log("No existe el usuario");
             }
         };
-        fetchUser();
+        if (id){
+            fetchUser();
+        }
+        
     }, [id]);
 
     if (!user) return <p>Cargando usuario...</p>

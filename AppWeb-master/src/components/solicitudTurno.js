@@ -10,21 +10,29 @@ const SolicitudTurno = () => {
   const [message, setMessage] = useState("");
   const [solicitudEnviada, setSolicitudEnviada] = useState(false); // Estado para bloquear envío
 
-  useEffect(() => {
-    const verificarSolicitud = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
+  const [isLoading, setIsLoading] = useState(true); // Estado para controlar la carga
 
-      const solicitudRef = doc(db, "solicitudes", user.uid);
-      const solicitudSnap = await getDoc(solicitudRef);
+useEffect(() => {
+  const verificarSolicitud = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      setIsLoading(false);
+      return;
+    }
 
-      if (solicitudSnap.exists()) {
-        setSolicitudEnviada(true); // Bloqueamos el botón si ya existe una solicitud
-      }
-    };
+    const solicitudRef = doc(db, "solicitudes", user.uid);
+    const solicitudSnap = await getDoc(solicitudRef);
 
-    verificarSolicitud();
-  }, []);
+    if (solicitudSnap.exists()) {
+      setSolicitudEnviada(true);
+    }
+    
+    setIsLoading(false); // Termina la carga
+  };
+
+  verificarSolicitud();
+}, []);
+
 
   const handleSolicitarPublicitar = async () => {
     if (solicitudEnviada) {
@@ -70,24 +78,24 @@ const SolicitudTurno = () => {
     }
   };
 
-  return (
+  return isLoading ? (
+    <p>Cargando...</p>
+  ) : (
     <div className="solicitud-container">
       <NavBar/>
-      <h2>Solicitar Publicidad</h2>
-      <p>
-        {solicitudEnviada 
-          ? "Gracias por confiar en nosotros. Te avisaremos cuando sea aprobada y te enviaremos la fecha y hora de colocación."
+      <div className="solicitudContainerBody">
+        <h2>Solicitar Publicidad</h2>
+        <p>
+          {solicitudEnviada 
+            ? "Gracias por confiar en nosotros. Te avisaremos cuando sea aprobada y te enviaremos la fecha y hora de colocación."
 
-          : "Haz clic en el botón para enviar tu solicitud de publicidad. El administrador la revisará."}
-      </p>
-      <button 
-        className="button-solicitar"
-        onClick={handleSolicitarPublicitar}
-        disabled={loading || solicitudEnviada} // Bloquea si ya envió una solicitud
-      >
-        {loading ? "Enviando..." : solicitudEnviada ? "Solicitud Enviada" : "Enviar Solicitud"}
-      </button>
-      {message && <p>{message}</p>}
+            : "Haz clic en el botón para enviar tu solicitud de publicidad. El administrador la revisará."}
+        </p>
+        <button className="button-solicitar" onClick={handleSolicitarPublicitar} disabled={loading || solicitudEnviada}>
+          {loading ? "Enviando..." : solicitudEnviada ? "Solicitud Enviada" : "Enviar Solicitud"}
+        </button>
+        {message && <p>{message}</p>}
+      </div>
     </div>
   );
 };
