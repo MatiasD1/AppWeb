@@ -29,7 +29,7 @@ const User = () => {
       <div className="content">
         <Carrusel />
         <div className="button-group">
-          <button className="button-user one" onClick={() => navigate("/solicitudTurno", { state:{id}})}>
+          <button className="button-user one" onClick={() => navigate("/solicitudTurno")}>
             Pedir Turno
           </button>
           <button className="button-user two" onClick={() => navigate("/uploadImage", { state:{id}})}>
