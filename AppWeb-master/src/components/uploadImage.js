@@ -86,7 +86,7 @@ const UploadImage = () => {
         name: user?.nombre || "Usuario desconocido",
         email: user?.email || "Email no disponible",
         message: `El usuario ${user?.nombre} ha subido una nueva imagen.`,
-        image_Url:imageUrl
+        image_url:imageUrl
       };
       
       const formData = new FormData();
