@@ -2,6 +2,7 @@ import React, {  useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom';
 import { db } from '../firebaseConfig';
 import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import NavBar from './navBar';
 
 const NoAceptados = () => {
 
@@ -46,45 +47,36 @@ const NoAceptados = () => {
 
     return (
         <>
-        <h1>Pendientes de Aceptación</h1>
+        <NavBar/>
         <div className='table-container'>
-        <table>
-          <thead>
-            <tr>
-              <th>Id</th>
-              <th>Nombre</th>
-              <th>Email</th>
-              <th>Licencia</th>
-              <th>Marca del Auto</th>
-              <th>Modelo del Auto</th>
-              <th>Aceptar</th>
-              <th>Rechazar</th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              filtroUsuarios.map((usuario) => (
-                <tr key={usuario.id}>
-                  <td>{usuario.id}</td>
-                  <td>{usuario.nombre}{usuario.apellido}</td>
-                  <td>{usuario.email}</td>
-                  <td>{usuario.licencia}</td>
-                  <td>{usuario.marcaAuto}</td>
-                  <td>{usuario.modeloAuto}</td>
-                  <td><button onClick={()=>AceptarUsuario(usuario.id)} style={{color:"green"}}>Aceptar</button></td>
-                  <td>
-                    <button onClick={() => RechazarUsuario(usuario.id)} style={{ color: "red" }}>
-                      Rechazar
-                    </button>
-                  </td>
-                </tr>            
-              ))
-            }
-          </tbody>
-        </table>
-      </div>
+          <h2>Pendientes de Aceptación</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Localidad</th>
+                <th>Aceptar</th>
+                <th>Rechazar</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                filtroUsuarios.map((usuario) => (
+                  <tr key={usuario.id}>
+                    <td>{usuario.nombre}{usuario.apellido}</td>
+                    <td>{usuario.email}</td>
+                    <td>{usuario.localidad}</td>
+                    <td><button className='button-user one' onClick={()=>AceptarUsuario(usuario.id)} >Aceptar</button></td>
+                    <td><button className='button-user two' onClick={() => RechazarUsuario(usuario.id)}>Rechazar</button></td>
+                  </tr>            
+                ))
+              } 
+            </tbody>
+          </table>
+        </div>
       </>
-  )
-}
+    )
+};
 
 export default NoAceptados;

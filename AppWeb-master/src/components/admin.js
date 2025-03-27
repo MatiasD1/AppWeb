@@ -11,12 +11,23 @@ import {
   updateDoc,
   getDoc,
 } from "firebase/firestore";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Admin = () => {
   const [userName, setUserName] = useState(null);
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedImage,setSelectedImage] = useState(null);
+  const navigate = useNavigate();
+
+
+  const handelImageClick = (imageUrl) => {
+    setSelectedImage(imageUrl);
+  }
+
+  const closeImageModal = () =>{
+    setSelectedImage(null);
+  }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -60,23 +71,8 @@ const Admin = () => {
     }
   };
 
-  const Ascenso = async (id) => {
-    try {
-      const userRef = doc(db, "usuarios", id);
-      await updateDoc(userRef, { role: "admin" });
-      console.log("Usuario ascendido a admin");
-
-      setUsuarios((prevUsuarios) =>
-        prevUsuarios.map((usuario) =>
-          usuario.id === id ? { ...usuario, role: "admin" } : usuario
-        )
-      );
-    } catch (error) {
-      console.error("Error al ascender al usuario", error);
-    }
-  };
-
-  const Descenso = async (id) => {
+  
+  const CambioDeRol = async (id)=>{
     try {
       const userRef = doc(db, "usuarios", id);
       const userSnap = await getDoc(userRef);
@@ -85,24 +81,18 @@ const Admin = () => {
         console.error("Error: El usuario no existe.");
         return;
       }
+      
+      const nuevoRol = userSnap.data().role === "user" ? "admin" : "user";
+      await updateDoc(userRef, { role: nuevoRol });
 
-      if (userSnap.data().role === "user") {
-        console.log("El usuario ya es 'user'.");
-        return;
-      }
-
-      await updateDoc(userRef, { role: "user" });
-      console.log("Administrador descendido a usuario");
-
-      setUsuarios((prevUsuarios) =>
-        prevUsuarios.map((usuario) =>
-          usuario.id === id ? { ...usuario, role: "user" } : usuario
-        )
+      setUsuarios((prev) =>
+        prev.map((user) => (user.id === id ? { ...user, role: nuevoRol } : user))
       );
+      
     } catch (error) {
-      console.error("Error al descender al usuario", error);
+      console.error("Error al cambiar de rol", error);
     }
-  };
+  }
 
   return (
     <>
@@ -110,21 +100,27 @@ const Admin = () => {
         <NavBar companyName="Mi Empresa" userName={userName} />
       </div>
       <div className="table-container">
+      <Link to={`/noAceptados`} state={{ usuarios }} className="botonNoAceptados">
+          No Aceptados
+        </Link>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
         <table>
           <thead>
             <tr>
-              <th>ID</th>
-
-          {/* <th>Ascenso</th>
-              <th>Descenso</th>
-          */}
               <th>Rol</th>
               <th>Nombre</th>
               <th>Email</th>
-              <th>Licencia</th>
-              <th>Marca del Auto</th>
-              <th>Modelo</th>
+              <th>Localidad</th>
+              <th>Estado</th>
+              <th>Fecha de Inicio</th>
+              <th>Fecha de Vencimiento</th>
+              <th>Finalizado</th>
+              <th >Imagen</th>
               <th></th>
+              <th>Detalles</th>
             </tr>
           </thead>
           <tbody>
@@ -133,38 +129,45 @@ const Admin = () => {
                 <td colSpan="10">Cargando usuarios...</td>
               </tr>
             ) : (
-              usuarios.map((usuario) => (
+              usuarios
+              .filter(usuario => usuario.aceptado === true) 
+              .map((usuario) => (
                 <tr key={usuario.id}>
-                  <td>{usuario.id}</td>
-                 {/* <td>
-                    <button onClick={() => Ascenso(usuario.id)}>Ascender</button>
-                  </td>
-                  <td>
-                    <button onClick={() => Descenso(usuario.id)}>Descender</button>
-                  </td>
-                  */}
-
-                  <td>{usuario.role}</td>
+                  
+                  <td><button className="button-user one"  onClick={()=>CambioDeRol(usuario.id)}>{usuario.role}</button></td>
                   <td>{usuario.nombre} {usuario.apellido}</td>
                   <td>{usuario.email}</td>
-                  <td>{usuario.licencia}</td>
-                  <td>{usuario.marcaAuto}</td>
-                  <td>{usuario.modeloAuto}</td>
+                  <td>{usuario.localidad}</td>
+                  <td>{usuario.estado}</td>
+                  <td>{usuario.fechaDeInicio}</td>
+                  <td>{usuario.fechaDeVencimiento}</td>
+                  <td>{usuario.finalizado}</td>
+                  <td >{localStorage.getItem(`uploadedImage_${usuario?.email}`) && (
+                    <button className="button-user one" onClick={()=>handelImageClick(localStorage.getItem(`uploadedImage_${usuario?.email}`))}>
+                      Ver Imagen
+                  </button>)}</td>
                   <td>
-                    <button className="botonBajaUsuario"
-                      onClick={() => ManejarBaja(usuario.id)}
-                    >
+                    <button className="botonBajaUsuario" onClick={() => ManejarBaja(usuario.id)}>
                       Dar de baja
                     </button>
+                  </td>
+                  <td>
+                    <button className="button-user one" onClick={()=>navigate("/userDetails",{state:{id:usuario.id}})}> Ver Detalles</button>
                   </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
-        <Link to={`/noAceptados`} state={{ usuarios }} className="botonNoAceptados">
-          No Aceptados
-        </Link>
+        
+        {/* Modal de imagen */}
+      {selectedImage && (
+        <div className="image-modal" onClick={closeImageModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <img src={selectedImage} alt="Imagen de usuario"/>
+          </div>
+        </div>
+      )}
       </div>
     </>
   );

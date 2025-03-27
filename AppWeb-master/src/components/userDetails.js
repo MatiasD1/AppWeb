@@ -1,13 +1,15 @@
 import { doc, getDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { db } from "../firebaseConfig";
-import UploadImage from "./uploadImage";
 import NavBar from "./navBar";
-import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
-const UserDetails = ({id}) =>{
+const UserDetails = () =>{
     const [user, setUser] = useState(null);    
     
+    const location = useLocation();
+    const id = location.state.id;
+
     useEffect(()=>{
     
         console.log("ID recibido en UserDetails:", id);
@@ -28,12 +30,13 @@ const UserDetails = ({id}) =>{
         
     }, [id]);
 
+    const imageUser =  localStorage.getItem(`uploadedImage_${user?.email}`);
+
     if (!user) return <p>Cargando usuario...</p>
 
     return (
         <div >
             <NavBar />
-            <Link to={`/user`}>Volver</Link>
             <h2>Detalles del Usuario</h2>
             <br/>
             <form className="formContainer">
@@ -50,9 +53,7 @@ const UserDetails = ({id}) =>{
                 <label>Modelo de Auto:</label>
                 <input type="text" defaultValue={user.modeloAuto} />
             </form>
-            <br/>
-
-            <div className="formContainer"><UploadImage user={user}/></div>
+            <img src={imageUser} alt="" className="formContainer"/>
         </div>
     )
 }
