@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import emailjs from "@emailjs/browser";
 import NavBar from "./navBar";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 
@@ -52,33 +52,68 @@ const UploadImage = () => {
     }
   };
 
+  
+  const uploadToCloudinary = async (imageBase64) => {
+    const formData = new FormData();
+    formData.append("file", imageBase64);
+    formData.append("upload_preset", "Wolf publicidad"); // Configurar en Cloudinary
+  
+    const response = await fetch("https://api.cloudinary.com/v1_1/dmtb1chtk/image/upload", {
+      method: "POST",
+      body: formData,
+    });
+  
+    const data = await response.json();
+    return data.secure_url; // URL pública de la imagen
+  };
+  
+
   const handleUpload = async () => {
     if (!selectedFile) {
       alert("Por favor, selecciona una imagen primero.");
       return;
     }
 
-    const templateParams = {
-      name: user?.nombre || "Usuario desconocido",
-      email: user?.email || "Email no disponible",
-      message: `El usuario ${user?.nombre} ha subido una nueva imagen.`,
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64Image = reader.result;
+      const imageUrl = await uploadToCloudinary(preview);
+      if (!imageUrl) {
+        alert("Error al subir la imagen.");
+        return;
+      }
+      const templateParams = {
+        name: user?.nombre || "Usuario desconocido",
+        email: user?.email || "Email no disponible",
+        message: `El usuario ${user?.nombre} ha subido una nueva imagen.`,
+        image_url:imageUrl
+      };
+      
+      const formData = new FormData();
+      formData.append("image", selectedFile);
+    
+      const attachment = {
+        content: base64Image.split(",")[1],  // Usamos el base64 de la imagen
+        filename: selectedFile.name,
+        type: selectedFile.type,
+        disposition: "inline", // Este es el tipo de disposición que permite incrustar la imagen en el correo
+        contentId: "image_cid", // Aquí se especifica el Content-ID para usarlo en el HTML
+      };
+      try {
+        await emailjs.send(
+          "service_e37h2uk",
+          "template_7bmzhk7",
+          templateParams,
+          "-xDfPr5oEJOtCZnFF",
+          attachment
+        );
+        alert("Correo enviado al administrador.");
+      }catch (error) {
+        console.error("Error al enviar el correo:", error);
+        alert("Hubo un problema al enviar el correo.");
+      }
     };
-
-    console.log("Enviando:", templateParams);
-
-    try {
-      await emailjs.send(
-        "service_e37h2uk",
-        "template_7bmzhk7",
-        templateParams,
-        "-xDfPr5oEJOtCZnFF"
-      );
-
-      alert("Correo enviado al administrador.");
-    } catch (error) {
-      console.error("Error al enviar el correo:", error);
-      alert("Hubo un problema al enviar el correo.");
-    }
+    reader.readAsDataURL(selectedFile); 
   };
 
   const handleDelete = async () => {
@@ -97,11 +132,9 @@ const UploadImage = () => {
   if (!user) return <p>Cargando usuario...</p>
 
   return (
-    <>
     <div>
-      <div><NavBar/><Link to={`/user`}>Volver</Link></div>
-      <h2>Detalles del Usuario</h2>
-      <div className="formContainer">
+      <div><NavBar/></div>
+      <div className="upload-image">
         <h3>Subir Imagen</h3>
         <p>Usuario: {user?.nombre}</p>
         <p>Email: {user?.email}</p>
@@ -110,9 +143,7 @@ const UploadImage = () => {
         <button onClick={handleUpload}>Enviar mail</button>
         {preview && <button onClick={handleDelete}>Eliminar Imagen</button>}
       </div>
-      
     </div>
-    </>
   );
 };
 

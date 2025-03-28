@@ -12,6 +12,11 @@ const Register = () => {
     apellido: "",
     email: "",
     telefono: "",
+    localidad:"",
+    fechaDeInicio:"-",
+    fechaDeVencimiento:"-",
+    estado:"inactivo",
+    finalizado:true,
     marcaAuto: "",
     modeloAuto: "",
     dominioAuto: "",
@@ -71,6 +76,7 @@ const Register = () => {
             <input type="text" name="apellido" value={formData.apellido} onChange={handleChange} placeholder="Apellido" required />
             <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Correo electrónico" required />
             <input type="tel" name="telefono" value={formData.telefono} onChange={handleChange} placeholder="Teléfono" required />
+            <input type="text" name="localidad" value={formData.localidad} onChange={handleChange} placeholder="Localidad" required/>
             <button type="button" onClick={nextStep}>Siguiente</button>
           </>
         )}

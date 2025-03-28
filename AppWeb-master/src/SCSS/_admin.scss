@@ -11,6 +11,11 @@ $table-border: #ddd;
   background-color: $Secundario;
   position: relative;
   
+  .hidden-col {
+    display: none;
+  }
+  
+
   table {
 
     width: 90%;
