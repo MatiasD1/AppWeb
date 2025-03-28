@@ -96,46 +96,46 @@ const Admin = () => {
   const handleEdit = async (id) => {
     if (editandoId === id) {
       try {
-        // 1. Actualizar el estado con los nuevos valores de las fechas (sin esperar Firestore)
-        const nuevaFechaDeInicio = fechas[id]?.fechaDeInicio
-          ? new Date(fechas[id].fechaDeInicio)
-          : usuarios.find((user) => user.id === id).fechaDeInicio.toDate();
-  
-        const nuevaFechaDeVencimiento = fechas[id]?.fechaDeVencimiento
-          ? new Date(fechas[id].fechaDeVencimiento)
-          : usuarios.find((user) => user.id === id).fechaDeVencimiento.toDate();
-  
+        // Obtenemos las nuevas fechas, si no existen tomamos las anteriores
+        const nuevasFechas = fechas[id] || {};
+
+        const fechaDeInicio = nuevasFechas.fechaDeInicio
+          ? Timestamp.fromDate(new Date(nuevasFechas.fechaDeInicio)) // Convertimos a Timestamp
+          : usuarios.find((user) => user.id === id).fechaDeInicio;
+
+        const fechaDeVencimiento = nuevasFechas.fechaDeVencimiento
+          ? Timestamp.fromDate(new Date(nuevasFechas.fechaDeVencimiento)) // Convertimos a Timestamp
+          : usuarios.find((user) => user.id === id).fechaDeVencimiento;
+
+        // Actualizamos el estado local de los usuarios con las fechas convertidas a Timestamp
         setUsuarios((prev) =>
           prev.map((user) =>
             user.id === id
               ? {
                   ...user,
-                  fechaDeInicio: nuevaFechaDeInicio,
-                  fechaDeVencimiento: nuevaFechaDeVencimiento,
+                  fechaDeInicio: fechaDeInicio,
+                  fechaDeVencimiento: fechaDeVencimiento,
                 }
               : user
           )
         );
-  
-        // 2. Luego, actualizar Firestore con los nuevos valores
+
+        // Ahora actualizamos Firestore con los valores correctos
         const userRef = doc(db, "usuarios", id);
         await updateDoc(userRef, {
-          fechaDeInicio: Timestamp.fromDate(nuevaFechaDeInicio),
-          fechaDeVencimiento: Timestamp.fromDate(nuevaFechaDeVencimiento),
+          fechaDeInicio: fechaDeInicio,
+          fechaDeVencimiento: fechaDeVencimiento,
         });
-  
-        // 3. Finalizar la edición
-        setEditandoId(null);
-  
+
+        setEditandoId(null); // Desactivamos el modo de edición
       } catch (error) {
         console.error("Error guardando fechas:", error);
       }
     } else {
-      // Activar edición si no se está editando
-      setEditandoId(id);
+      setEditandoId(id); // Si no estamos editando, activamos el modo de edición
     }
   };
-  
+
     
 
   return (
