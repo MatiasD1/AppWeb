@@ -52,8 +52,14 @@ const UserDetails = () =>{
                 <input type="text" defaultValue={user.marcaAuto} />
                 <label>Modelo de Auto:</label>
                 <input type="text" defaultValue={user.modeloAuto} />
+                {imageUser ? ( 
+                    <img src={imageUser} alt="" className="formContainer"/>
+                ):(
+                    <p>No hay imagen cargada</p>
+                )
+                }
             </form>
-            <img src={imageUser} alt="" className="formContainer"/>
+            
         </div>
     )
 }

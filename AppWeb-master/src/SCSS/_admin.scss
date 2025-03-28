@@ -8,9 +8,14 @@ $table-border: #ddd;
   align-items: center;
   flex-direction: column;
   min-height: 100vh;
-  background-color: $Secundario;
+  background-color: #ede9e3e6;
   position: relative;
-  
+  width: 100%;
+  overflow-x: auto;
+  padding: 20px;
+  box-sizing: border-box;
+  min-width: 100vw;
+
   .hidden-col {
     display: none;
   }
@@ -18,34 +23,42 @@ $table-border: #ddd;
 
   table {
 
-    width: 90%;
+    width: 100%;
     max-width: 1000px;
     border-collapse: collapse;
-    background-color: $Primario;
+    background-color: white;
     text-align: center;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     border-spacing: 0;
+    margin:0 auto;
+    table-layout: auto;
+
     th, td {
-      padding: 5px 20px;
-      border: 1px solid $table-border;
+      padding: 10px;
+      border: 1px solid #ddd;
+      white-space: normal;
+      word-wrap: break-word;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     th {
-      background-color: $Elementos;
-      color: $Primario;
+      background-color: #b60043;
+      color: white;
       font-size: 16px;
       text-transform: uppercase;
     }
 
     tr:nth-child(even) {
-      background-color: $Primario;
+      background-color: white;
       transition: background-color 0.3s ease;
     }
 
     tr:hover {
-      background-color: darken($Secundario, 10%);
+      background-color: darken(#ede9e3e6, 10%);
     }
   }
 
@@ -54,8 +67,8 @@ $table-border: #ddd;
     top: 5%; 
     left: 10%; 
     padding: 10px 20px;
-    background-color: $Elementos;
-    color: $Primario;
+    background-color: #b60043;
+    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -63,7 +76,7 @@ $table-border: #ddd;
     transition: background-color 0.3s ease;
   
     &:hover {
-      background-color: darken($Elementos, 10%);
+      background-color: darken(#b60043, 10%);
     }
   }
   .botonBajaUsuario {
@@ -73,14 +86,15 @@ $table-border: #ddd;
     color:red;
     font-size: 1rem;
     cursor: pointer;
-    background-color: $Secundario;
+    background-color: #ede9e3e6;
     border: none;
     display: flex;
     justify-content: center;
     align-items: center;
     transition: background-color 0.3s ease;
-    white-space: nowrap;  // Evita saltos de línea
+    white-space: nowrap;  
     overflow: hidden;
+    
     &:hover {
       background-color: darken(white, 10%);
     }
@@ -90,12 +104,12 @@ $table-border: #ddd;
     background-color: transparent;
     color: red;
     font-weight: bold;
-    border: 2px solid $Elementos;
+    border: 2px solid #b60043;
     padding: 6px 10px;
 
     &:hover {
-      background-color: $Elementos;
-      color: $Primario;
+      background-color: #b60043;
+      color: white;
     }
   }
 
@@ -103,10 +117,9 @@ $table-border: #ddd;
     display: block;
     margin-top: 15px;
     text-decoration: none;
-    color: $Elementos;
+    color: #b60043;
     font-weight: bold;
     text-align: center;
   }
   
 }
-
