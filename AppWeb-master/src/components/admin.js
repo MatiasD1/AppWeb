@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { auth, db } from "../firebaseConfig";
-import { getUserName } from "../auth";
-import { onAuthStateChanged } from "firebase/auth";
+import {  db } from "../firebaseConfig";
 import NavBar from "./navBar";
 import {
   getDocs,
@@ -10,14 +8,16 @@ import {
   doc,
   updateDoc,
   getDoc,
+  Timestamp
 } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 
 const Admin = () => {
-  const [userName, setUserName] = useState(null);
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedImage,setSelectedImage] = useState(null);
+  const [editandoId, setEditandoId] = useState(null);
+  const [fechas, setFechas] = useState({});
   const navigate = useNavigate();
 
 
@@ -29,18 +29,7 @@ const Admin = () => {
     setSelectedImage(null);
   }
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const name = await getUserName(user.uid);
-        setUserName(name);
-      } else {
-        setUserName(null);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+  
 
   const obtenerUsuarios = async () => {
     try {
@@ -71,6 +60,7 @@ const Admin = () => {
     }
   };
 
+
   
   const CambioDeRol = async (id)=>{
     try {
@@ -94,19 +84,69 @@ const Admin = () => {
     }
   }
 
+  
+  const handleChange = (id, campo, valor) => {
+    setFechas((prev) => ({
+      ...prev,
+      [id]: { ...prev[id], [campo]: valor },
+    }));
+  };
+  
+
+  const handleEdit = async (id) => {
+    if (editandoId === id) {
+      try {
+        // 1. Actualizar el estado con los nuevos valores de las fechas (sin esperar Firestore)
+        const nuevaFechaDeInicio = fechas[id]?.fechaDeInicio
+          ? new Date(fechas[id].fechaDeInicio)
+          : usuarios.find((user) => user.id === id).fechaDeInicio.toDate();
+  
+        const nuevaFechaDeVencimiento = fechas[id]?.fechaDeVencimiento
+          ? new Date(fechas[id].fechaDeVencimiento)
+          : usuarios.find((user) => user.id === id).fechaDeVencimiento.toDate();
+  
+        setUsuarios((prev) =>
+          prev.map((user) =>
+            user.id === id
+              ? {
+                  ...user,
+                  fechaDeInicio: nuevaFechaDeInicio,
+                  fechaDeVencimiento: nuevaFechaDeVencimiento,
+                }
+              : user
+          )
+        );
+  
+        // 2. Luego, actualizar Firestore con los nuevos valores
+        const userRef = doc(db, "usuarios", id);
+        await updateDoc(userRef, {
+          fechaDeInicio: Timestamp.fromDate(nuevaFechaDeInicio),
+          fechaDeVencimiento: Timestamp.fromDate(nuevaFechaDeVencimiento),
+        });
+  
+        // 3. Finalizar la edición
+        setEditandoId(null);
+  
+      } catch (error) {
+        console.error("Error guardando fechas:", error);
+      }
+    } else {
+      // Activar edición si no se está editando
+      setEditandoId(id);
+    }
+  };
+  
+    
+
   return (
     <>
       <div>
-        <NavBar companyName="Mi Empresa" userName={userName} />
+        <NavBar companyName="Mi Empresa"/>
       </div>
       <div className="table-container">
       <Link to={`/noAceptados`} state={{ usuarios }} className="botonNoAceptados">
           No Aceptados
         </Link>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
         <table>
           <thead>
             <tr>
@@ -118,9 +158,10 @@ const Admin = () => {
               <th>Fecha de Inicio</th>
               <th>Fecha de Vencimiento</th>
               <th>Finalizado</th>
-              <th >Imagen</th>
+              <th>Imagen</th>
               <th></th>
-              <th>Detalles</th>
+              <th>Ver Detalles</th>
+              <th>Editar</th>
             </tr>
           </thead>
           <tbody>
@@ -139,8 +180,26 @@ const Admin = () => {
                   <td>{usuario.email}</td>
                   <td>{usuario.localidad}</td>
                   <td>{usuario.estado}</td>
-                  <td>{usuario.fechaDeInicio}</td>
-                  <td>{usuario.fechaDeVencimiento}</td>
+                  <td>
+                    <input 
+                    type="date" 
+                    name="fechaDeInicio"
+                    value={fechas[usuario.id]?.fechaDeInicio ||
+                      usuario.fechaDeInicio.toDate().toISOString().split("T")[0]}
+                    onChange={(e)=>handleChange(usuario.id,"fechaDeInicio",e.target.value)}
+                    disabled={editandoId!==usuario.id}>
+                    </input>
+                  </td>
+                  <td>
+                    <input 
+                    type="date" 
+                    name="fechaDeVencimiento"
+                    value={fechas[usuario.id]?.fechaDeVencimiento ||
+                      usuario.fechaDeVencimiento.toDate().toISOString().split("T")[0]}
+                    onChange={(e)=>handleChange(usuario.id,"fechaDeVencimiento",e.target.value)}
+                    disabled={editandoId!==usuario.id}>
+                    </input>
+                  </td>
                   <td>{usuario.finalizado}</td>
                   <td >{localStorage.getItem(`uploadedImage_${usuario?.email}`) && (
                     <button className="button-user one" onClick={()=>handelImageClick(localStorage.getItem(`uploadedImage_${usuario?.email}`))}>
@@ -152,7 +211,10 @@ const Admin = () => {
                     </button>
                   </td>
                   <td>
-                    <button className="button-user one" onClick={()=>navigate("/userDetails",{state:{id:usuario.id}})}> Ver Detalles</button>
+                    <button className="button-user one" onClick={()=>navigate("/userDetails",{state:{id:usuario.id}})}>Detalles</button>
+                  </td>
+                  <td>
+                    <button className="botonBajaUsuario" onClick={()=>handleEdit(usuario.id)}>{editandoId? "Guardar":"Editar"}</button>
                   </td>
                 </tr>
               ))
