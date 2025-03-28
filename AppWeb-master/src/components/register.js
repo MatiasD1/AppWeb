@@ -92,7 +92,7 @@ const Register = () => {
 };
 
   return (
-    <div className="formContainer">
+    <div className="register">
       <AuthForm
         title="Registrar"
         buttonText={step === 5 ? "Registrar" : "Siguiente"}
