@@ -92,41 +92,48 @@ const Admin = () => {
     }));
   };
   
+  const ajustarFechaBuenosAires = (fechaStr) => {
+    const fecha = new Date(fechaStr);
+    fecha.setUTCHours(3, 0, 0, 0); // Ajustar a medianoche en Buenos Aires (UTC-3)
+    return fecha;
+  };
 
+  
   const handleEdit = async (id) => {
     if (editandoId === id) {
       try {
         // Obtenemos las nuevas fechas, si no existen tomamos las anteriores
         const nuevasFechas = fechas[id] || {};
-
+  
         const fechaDeInicio = nuevasFechas.fechaDeInicio
-          ? Timestamp.fromDate(new Date(nuevasFechas.fechaDeInicio)) // Convertimos a Timestamp
-          : usuarios.find((user) => user.id === id).fechaDeInicio;
-
-        const fechaDeVencimiento = nuevasFechas.fechaDeVencimiento
-          ? Timestamp.fromDate(new Date(nuevasFechas.fechaDeVencimiento)) // Convertimos a Timestamp
-          : usuarios.find((user) => user.id === id).fechaDeVencimiento;
-
+        ? ajustarFechaBuenosAires(nuevasFechas.fechaDeInicio)
+        : new Date(usuarios.find((user) => user.id === id).fechaDeInicio);
+      
+      const fechaDeVencimiento = nuevasFechas.fechaDeVencimiento
+        ? ajustarFechaBuenosAires(nuevasFechas.fechaDeVencimiento)
+        : new Date(usuarios.find((user) => user.id === id).fechaDeVencimiento);
+      
+  
         // Actualizamos el estado local de los usuarios con las fechas convertidas a Timestamp
         setUsuarios((prev) =>
           prev.map((user) =>
             user.id === id
               ? {
                   ...user,
-                  fechaDeInicio: fechaDeInicio,
-                  fechaDeVencimiento: fechaDeVencimiento,
+                  fechaDeInicio: Timestamp.fromDate(fechaDeInicio),
+                  fechaDeVencimiento: Timestamp.fromDate(fechaDeVencimiento),
                 }
               : user
           )
         );
-
+  
         // Ahora actualizamos Firestore con los valores correctos
         const userRef = doc(db, "usuarios", id);
         await updateDoc(userRef, {
-          fechaDeInicio: fechaDeInicio,
-          fechaDeVencimiento: fechaDeVencimiento,
+          fechaDeInicio: Timestamp.fromDate(fechaDeInicio),
+          fechaDeVencimiento: Timestamp.fromDate(fechaDeVencimiento),
         });
-
+  
         setEditandoId(null); // Desactivamos el modo de edición
       } catch (error) {
         console.error("Error guardando fechas:", error);
@@ -135,7 +142,8 @@ const Admin = () => {
       setEditandoId(id); // Si no estamos editando, activamos el modo de edición
     }
   };
-
+  
+  
     
 
   return (
@@ -200,7 +208,7 @@ const Admin = () => {
                     disabled={editandoId!==usuario.id}>
                     </input>
                   </td>
-                  <td>{usuario.finalizado}</td>
+                  <td>{usuario.finalizado?"Si":"No"}</td>
                   <td >{localStorage.getItem(`uploadedImage_${usuario?.email}`) && (
                     <button className="button-user one" onClick={()=>handelImageClick(localStorage.getItem(`uploadedImage_${usuario?.email}`))}>
                       Ver Imagen
