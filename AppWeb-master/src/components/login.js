@@ -30,7 +30,14 @@ const Login = () => {
 
     return () => unsubscribe(); // 🔹 Limpia el listener al desmontar
   }, [navigate]);
-
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "email") {
+      setEmail(value);
+    } else if (name === "password") {
+      setPassword(value);
+    }
+  };
   const handleLogin = async (e) => { // Funcion cuando se envia el formulario
     e.preventDefault();
     try {
@@ -75,17 +82,17 @@ const Login = () => {
   ];
 
   return (
-    <>
     <div className="login">
-      <AuthForm                   // Envía la info al componente AuthForm para confeccionar el formulario 
-        title="Iniciar sesión"
-        buttonText="Iniciar sesión"
-        handleSubmit={handleLogin}
-        fields={fields}  // Envía los campos del array fields 
-      />
+     <AuthForm
+  title="Iniciar sesión"
+  buttonText="Iniciar sesión"
+  handleSubmit={handleLogin}
+  fields={fields}
+  handleChange={handleChange}  // Ensure this is passed down properly
+>
+  <div>No Estás registrado? <Link to={`/register`}>Registrate Aquí</Link></div>
+</AuthForm>
     </div>
-    <div>No Estás registrado? <Link to={`/register`}>Registrate Aquí</Link></div>
-    </>
   );
 };
 

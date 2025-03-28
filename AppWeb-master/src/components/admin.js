@@ -139,8 +139,8 @@ const Admin = () => {
                   <td>{usuario.email}</td>
                   <td>{usuario.localidad}</td>
                   <td>{usuario.estado}</td>
-                  <td>{usuario.fechaDeInicio}</td>
-                  <td>{usuario.fechaDeVencimiento}</td>
+                  <td>{usuario.fechaDeInicio?.toDate().toLocaleDateString()}</td>
+                  <td>{usuario.fechaDeVencimiento?.toDate().toLocaleDateString()}</td>
                   <td>{usuario.finalizado}</td>
                   <td >{localStorage.getItem(`uploadedImage_${usuario?.email}`) && (
                     <button className="button-user one" onClick={()=>handelImageClick(localStorage.getItem(`uploadedImage_${usuario?.email}`))}>
