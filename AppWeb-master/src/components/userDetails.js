@@ -114,8 +114,7 @@ const UserDetails = () =>{
                         <input
                             type="date"
                             name="fecha"
-                            value={turnos[user.id]?.fecha? 
-                                turnos[user.id].fecha.toDate().toISOString().split("T")[0] : ""}
+                            value={turno.fecha instanceof Timestamp ? turno.fecha.toDate().toISOString().split("T")[0] : turno.fecha}
                             onChange={(e) => handleChange(index, e.target.value)}
                             disabled={user.turnos}
                         />
