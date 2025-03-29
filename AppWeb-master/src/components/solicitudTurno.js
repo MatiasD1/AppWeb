@@ -69,7 +69,7 @@ useEffect(() => {
 
       await setDoc(solicitudRef, solicitud);
       setSolicitudEnviada(true); // Bloquear el botón después de enviar
-      setMessage("¡Solicitud enviada con éxito! El administrador la revisará.");
+      //setMessage("¡Solicitud enviada con éxito! El administrador la revisará.");
     } catch (error) {
       console.error("Error al enviar solicitud:", error);
       setMessage("Hubo un error al enviar la solicitud.");

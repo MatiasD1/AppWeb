@@ -209,6 +209,7 @@ const Admin = () => {
                     </input>
                   </td>
                   <td>{usuario.finalizado?"Si":"No"}</td>
+
                   <td >{localStorage.getItem(`uploadedImage_${usuario?.email}`) && (
                     <button className="button-user one" onClick={()=>handelImageClick(localStorage.getItem(`uploadedImage_${usuario?.email}`))}>
                       Ver Imagen

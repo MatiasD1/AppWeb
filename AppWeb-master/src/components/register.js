@@ -1,22 +1,18 @@
-import React, { useState } from "react"; // Maneja los datos del formulario y la navegacion entre pasos
-import { db } from "../firebaseConfig"; 
+import React, { useState } from "react";
+import { db } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../auth";
 import { setDoc, doc } from "firebase/firestore";
-import { Link } from "react-router-dom";
+import AuthForm from "./authForm";
 
 const Register = () => {
-  const [step, setStep] = useState(1); // Paso en el que va el usuario
-  const [formData, setFormData] = useState({ // Almacena los datos que va ingresando el usuario
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
     email: "",
     telefono: "",
-    localidad:"",
-    fechaDeInicio:"-",
-    fechaDeVencimiento:"-",
-    estado:"inactivo",
-    finalizado:true,
+    localidad: "",
     marcaAuto: "",
     modeloAuto: "",
     dominioAuto: "",
@@ -24,121 +20,108 @@ const Register = () => {
     aliasBancario: "",
     aceptaTerminos: false,
     password: "",
-    aceptado:false
   });
-  const [message, setMessage] = useState(""); // Almacena el mensaje de error para mostrar al final si el registro falla 
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  const handleChange = (e) => { // Se ejecuta cada vez que un usuario escribe en un input
-    const { name, value, type, checked } = e.target; // "e" es el evento (e) que se crea automaticamente cuando ocurre una accion o evento en el DOM, y target sus valores, es decir, las 4 propiedades: nombre del input, valor ingresado, tipo de valor y true o false en caso de checkbox
-    setFormData({ 
-      ...formData, // Copia los datos actuales del formulario...
-      [name]: type === "checkbox" ? checked : value, // ...true o false si es checkbox, si no el valor
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
     });
   };
 
-  // Métodos para cambiar  el estado step 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
 
-  const handleSubmit = async (e) => { // Envia el formulario
-    e.preventDefault(); // Evita que se envíe cuando ocurre un evento
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const user = await registerUser(formData.email, formData.password); // Registra usuario en Firebase Authentication
-      
-      // Guarda datos en Firestore con el rol asignado automáticamente
+      const user = await registerUser(formData.email, formData.password);
       await setDoc(doc(db, "usuarios", user.uid), {
-        ...formData, // Guarda los datos almacenados
-        role: "user",  // Asignación automática del rol "user"
+        ...formData,
+        role: "user",
         timestamp: new Date(),
       });
-    
-      console.log("✅ Registro exitoso");
       alert("Registro exitoso");
-      navigate("/login"); // Redirige a /login
+      navigate("/login");
     } catch (error) {
-      console.error("❌ Error al registrar:", error);
       setMessage("Hubo un error al registrar. Inténtalo nuevamente.");
-      setStep(6); // Si hay un error lo muestra en el step 6 
+      setStep(6);
     }
   };
-  
-  
+
+  const renderFields = () => {
+    switch (step) {
+      case 1:
+        return [
+          { name: "nombre", label: "Nombre", value: formData.nombre },
+          { name: "apellido", label: "Apellido", value: formData.apellido },
+          { name: "email", label: "Correo electrónico", type: "email", value: formData.email },
+          { name: "telefono", label: "Teléfono", value: formData.telefono },
+          { name: "localidad", label: "Localidad", value: formData.localidad },
+        ];
+      case 2:
+        return [
+          { name: "marcaAuto", label: "Marca del auto", value: formData.marcaAuto },
+          { name: "modeloAuto", label: "Modelo del auto", value: formData.modeloAuto },
+          { name: "dominioAuto", label: "Dominio del auto", value: formData.dominioAuto },
+          { name: "licencia", label: "Número de licencia", value: formData.licencia },
+        ];
+      case 3:
+        return [
+          { name: "aliasBancario", label: "Alias bancario", value: formData.aliasBancario },
+        ];
+      case 4:
+        return [
+          { name: "password", label: "Contraseña", type: "password", value: formData.password },
+        ];
+      default:
+        return [];
+    }
+  };
+
+  const handleButtonClick = (e) => {
+  e.preventDefault(); // Evitar que se recargue la página
+  if (step === 5) {
+    handleSubmit(e); // Si es el paso 5, ejecuta el submit
+  } else {
+    nextStep(); // En los demás pasos, avanza al siguiente paso
+  }
+};
+
   return (
-    <div className="formContainer">
-      <form onSubmit={handleSubmit}>
-        <h1>Registrar</h1>
-
-        {step === 1 && (
-          <>
-            <h2>Datos personales</h2>
-            <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} placeholder="Nombre" required /> {/*value muestra el valor actual del campo (formData.nombre), es decir, los caracteres que se están ingresando en tiempo real, y handleChange agrega el valor al objeto formData */}
-            <input type="text" name="apellido" value={formData.apellido} onChange={handleChange} placeholder="Apellido" required />
-            <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Correo electrónico" required />
-            <input type="tel" name="telefono" value={formData.telefono} onChange={handleChange} placeholder="Teléfono" required />
-            <input type="text" name="localidad" value={formData.localidad} onChange={handleChange} placeholder="Localidad" required/>
-            <button type="button" onClick={nextStep}>Siguiente</button>
-          </>
-        )}
-
-        {step === 2 && (
-          <>
-            <h2>Datos del vehículo</h2>
-            <input type="text" name="marcaAuto" value={formData.marcaAuto} onChange={handleChange} placeholder="Marca del auto" required />
-            <input type="text" name="modeloAuto" value={formData.modeloAuto} onChange={handleChange} placeholder="Modelo del auto" required />
-            <input type="text" name="dominioAuto" value={formData.dominioAuto} onChange={handleChange} placeholder="Dominio del auto" required />
-            <input type="text" name="licencia" value={formData.licencia} onChange={handleChange} placeholder="Número de licencia" required />
-            <button type="button" onClick={prevStep}>Atrás</button>
-            <button type="button" onClick={nextStep}>Siguiente</button>
-          </>
-        )}
-
-        {step === 3 && (
-          <>
-            <h2>Datos bancarios</h2>
-            <input type="text" name="aliasBancario" value={formData.aliasBancario} onChange={handleChange} placeholder="Alias bancario" required />
-            <label>
-              <input type="checkbox" name="aceptaTerminos" checked={formData.aceptaTerminos} onChange={handleChange} required />
-              Acepto los términos y condiciones
-            </label>
-            <button type="button" onClick={prevStep}>Atrás</button>
-            <button type="button" onClick={nextStep}>Siguiente</button>
-          </>
-        )}
-
-        {step === 4 && (
-          <>
-            <h2>Crear contraseña</h2>
-            <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Contraseña" required />
-            <button type="button" onClick={prevStep}>Atrás</button>
-            <button type="button" onClick={nextStep}>Siguiente</button>
-          </>
-        )}
-
+    <div className="register">
+      <AuthForm
+        title="Registrar"
+        buttonText={step === 5 ? "Registrar" : "Siguiente"}
+        handleSubmit={handleButtonClick} // Usamos la nueva función para el botón
+        fields={renderFields()}
+        termsAccepted={formData.aceptaTerminos}
+        setTermsAccepted={(checked) => setFormData({ ...formData, aceptaTerminos: checked })}
+        handleChange={handleChange}
+      >
         {step === 5 && (
-          <>
+          <div>
             <h2>Confirmar Datos</h2>
             <p><strong>Nombre:</strong> {formData.nombre} {formData.apellido}</p>
-            <p><strong>Email:</strong> {formData.email}</p> {/* Muestra la propiedad email del objeto formData */}
+            <p><strong>Email:</strong> {formData.email}</p>
             <p><strong>Teléfono:</strong> {formData.telefono}</p>
             <p><strong>Auto:</strong> {formData.marcaAuto} {formData.modeloAuto}</p>
             <p><strong>Dominio:</strong> {formData.dominioAuto}</p>
             <p><strong>Licencia:</strong> {formData.licencia}</p>
             <p><strong>Alias bancario:</strong> {formData.aliasBancario}</p>
             <p><strong>Aceptó términos:</strong> {formData.aceptaTerminos ? "Sí" : "No"}</p>
-            <button type="button" onClick={prevStep}>Atrás</button>
-            <button type="submit">Registrar</button>
-          </>
+          </div>
         )}
-
         {step === 6 && (
-          <>
+          <div>
             <h2>{message}</h2>
             <button type="button" onClick={() => setStep(1)}>Volver al inicio</button>
-          </>
+          </div>
         )}
-      </form>
-      <div>Ya estás registrado? <Link to={`/login`}>Inicia sesión aquí</Link></div>
+      </AuthForm>
     </div>
   );
 };
