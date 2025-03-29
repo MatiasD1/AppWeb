@@ -243,100 +243,132 @@ input:focus {
     margin-top: 20px;
   }
 }
+
 .table-container {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   min-height: 100vh;
-  background-color: rgba(237, 233, 227, 0.9019607843);
+  background-color: #ede9e3e6;
   position: relative;
+
+  width: 100%;
+  overflow-x: auto;
+  padding: 20px;
+  box-sizing: border-box;
+  min-width: 100vw;
+
+  .hidden-col {
+    display: none;
+  }
+  
+
+  table {
+
+    width: 100%;
+    max-width: 1000px;
+    border-collapse: collapse;
+    background-color: white;
+    text-align: center;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-spacing: 0;
+    margin:0 auto;
+    table-layout: auto;
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      white-space: normal;
+      word-wrap: break-word;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    th {
+      background-color: #b60043;
+      color: white;
+      font-size: 16px;
+      text-transform: uppercase;
+    }
+
+    tr:nth-child(even) {
+      background-color: white;
+      transition: background-color 0.3s ease;
+    }
+
+    tr:hover {
+      background-color: darken(#ede9e3e6, 10%);
+    }
+  }
+
+  .botonNoAceptados {
+    position: absolute;
+    top: 5%; 
+    left: 10%; 
+    padding: 10px 20px;
+    background-color: #b60043;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  
+    &:hover {
+      background-color: darken(#b60043, 10%);
+    }
+  }
+  .botonBajaUsuario {
+    flex: 1; /* Hace que los botones se estiren y tengan el mismo tamaño */
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    color:red;
+    font-size: 1rem;
+    cursor: pointer;
+    background-color: #ede9e3e6;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;  
+    overflow: hidden;
+    
+    &:hover {
+      background-color: darken(white, 10%);
+    }
+  }
+
+  .delete-button {
+    background-color: transparent;
+    color: red;
+    font-weight: bold;
+    border: 2px solid #b60043;
+    padding: 6px 10px;
+
+    &:hover {
+      background-color: #b60043;
+      color: white;
+    }
+  }
+
+  a {
+    display: block;
+    margin-top: 15px;
+    text-decoration: none;
+    color: #b60043;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+
 }
-.table-container .hidden-col {
-  display: none;
-}
-.table-container table {
-  width: 90%;
-  max-width: 1000px;
-  border-collapse: collapse;
-  background-color: white;
-  text-align: center;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  border-spacing: 0;
-}
-.table-container table th, .table-container table td {
-  padding: 5px 20px;
-  border: 1px solid #ddd;
-}
-.table-container table th {
-  background-color: #b60043;
-  color: white;
-  font-size: 16px;
-  text-transform: uppercase;
-}
-.table-container table tr:nth-child(even) {
-  background-color: white;
-  transition: background-color 0.3s ease;
-}
-.table-container table tr:hover {
-  background-color: rgba(217.0434782609, 208.6086956522, 195.9565217391, 0.9019607843);
-}
-.table-container .botonNoAceptados {
-  position: absolute;
-  top: 5%;
-  left: 10%;
-  padding: 10px 20px;
-  background-color: #b60043;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
-}
-.table-container .botonNoAceptados:hover {
-  background-color: rgb(131, 0, 48.2252747253);
-}
-.table-container .botonBajaUsuario {
-  flex: 1; /* Hace que los botones se estiren y tengan el mismo tamaño */
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  color: red;
-  font-size: 1rem;
-  cursor: pointer;
-  background-color: rgba(237, 233, 227, 0.9019607843);
-  border: none;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: background-color 0.3s ease;
-  white-space: nowrap;
-  overflow: hidden;
-}
-.table-container .botonBajaUsuario:hover {
-  background-color: rgb(229.5, 229.5, 229.5);
-}
-.table-container .delete-button {
-  background-color: transparent;
-  color: red;
-  font-weight: bold;
-  border: 2px solid #b60043;
-  padding: 6px 10px;
-}
-.table-container .delete-button:hover {
-  background-color: #b60043;
-  color: white;
-}
-.table-container a {
-  display: block;
-  margin-top: 15px;
-  text-decoration: none;
-  color: #b60043;
-  font-weight: bold;
-  text-align: center;
-}
+
+
 
 .user-container {
   display: flex;
