@@ -8,6 +8,7 @@ const UserDetails = () =>{
     const [user, setUser] = useState(null);  
     const [turnos, setTurnos] = useState([{ id: 1, fecha: "" }]);  
     const [guardando, setGuardando] = useState(false);
+    const [solicitudes, setSolicitudes] = useState(null);
 
     const location = useLocation();
     const id = location.state?.id;
@@ -18,10 +19,13 @@ const UserDetails = () =>{
         const fetchUser = async () =>{
             const userRef =doc(db,"usuarios", id);
             const userSnap = await getDoc(userRef);
+            const userRefTur = doc(db,"solicitudes",id);
+            const userTurSnap = await getDoc(userRefTur);
 
             if (userSnap.exists()){
                 console.log("Documento encontrado",userSnap.data());
                 setUser(userSnap.data());
+                setSolicitudes(userTurSnap.data());
             }else{
                 console.log("No existe el usuario");
             }
@@ -49,7 +53,7 @@ const UserDetails = () =>{
     const handleGuardar = async (id) => {
         try {
             setGuardando(true);
-    
+            const userRefTur = doc(db,"solicitudes",id);
             const userRef = doc(db, "usuarios", id);
             const turnosValidos = turnos
                 .filter((turno) => turno.fecha) // Solo turnos con fecha
@@ -58,8 +62,9 @@ const UserDetails = () =>{
                 }));
     
             
-            await updateDoc(userRef, { turnos: turnosValidos, estado:"pendiente" });
-    
+            await updateDoc(userRef, { estado:"pendiente" });
+            
+            await updateDoc(userRefTur,{ turnos: turnosValidos,estado:"solicitud contestada"});
             
             setTurnos([{ id: 1, fecha: "" }]);
     
@@ -108,7 +113,8 @@ const UserDetails = () =>{
             </form>
             <div className="formContainer">
                 <h2>Gestión de Turnos</h2>
-                {turnos.map((turno, index) => (
+                {solicitudes.estado==="solicitud pendiente"? (
+                    turnos.map((turno, index) => (
                     <div key={index} style={{ marginBottom: "10px" }}>
                         <label>Turno {turno.id}:</label>
                         <input
@@ -116,12 +122,24 @@ const UserDetails = () =>{
                             name="fecha"
                             value={turno.fecha instanceof Timestamp ? turno.fecha.toDate().toISOString().split("T")[0] : turno.fecha}
                             onChange={(e) => handleChange(index, e.target.value)}
-                            disabled={user.turnos}
                         />
                     </div>
+                    ))
+                ):(
+                    <>
+                    <p>El usuario ya tiene turnos</p>
+
+                    {solicitudes.turnos.map((turno,index)=>(
+                        <div key={index} style={{ marginBottom: "10px" }}>
+                         <label>Turno {turno.id}:</label>
+                         <label>Fecha {turno.fecha.toDate().toISOString().split("T")[0]}</label>
+                        </div>   
+                    ))                    
+                    }
+                    </>
                     
-                ))}
-                <button onClick={()=>handleGuardar(id)} disabled={guardando}>{guardando ? "Guardando..." : "Guardar Turnos"}</button>
+                )}
+                <button className="button-user one" onClick={()=>handleGuardar(id)} disabled={guardando || solicitudes.estado!=="solicitud pendiente"}>{guardando ? "Guardando..." : "Guardar Turnos"}</button>
                 
             </div>
         </div>
