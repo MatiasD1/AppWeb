@@ -1,6 +1,6 @@
 import React from "react";
 
-const AuthForm = ({ title, buttonText, handleSubmit, fields = [], termsAccepted, setTermsAccepted, handleChange, children }) => {
+const AuthForm = ({ title, buttonText, handleSubmit, fields = [], termsAccepted, setTermsAccepted, handleChange, children, showSubmitButton }) => {
   return (
     <div className="authContainer">
       <form className="formContainer" onSubmit={handleSubmit}>
@@ -32,7 +32,9 @@ const AuthForm = ({ title, buttonText, handleSubmit, fields = [], termsAccepted,
             <label htmlFor="terms">Acepto los términos y condiciones</label>
           </div>
         )}
-        <button className="buttonForm" type="submit">{buttonText}</button>
+        {showSubmitButton && (
+          <button className="buttonForm" type="submit">{buttonText}</button>
+        )}
         {children}
       </form>
     </div>

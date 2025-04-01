@@ -89,6 +89,7 @@ const Login = () => {
   handleSubmit={handleLogin}
   fields={fields}
   handleChange={handleChange}  // Ensure this is passed down properly
+  showSubmitButton={true} // Se mostrará el botón de submit
 >
   <div>No Estás registrado? <Link to={`/register`}>Registrate Aquí</Link></div>
 </AuthForm>

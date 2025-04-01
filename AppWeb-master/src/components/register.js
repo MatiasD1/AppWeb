@@ -14,8 +14,8 @@ const Register = () => {
     telefono: "",
     fechaDeInicio: Timestamp.fromDate(new Date()),
     fechaDeVencimiento: Timestamp.fromDate(new Date()),
-    estado:"inactivo",
-    finalizado:true,
+    estado: "inactivo",
+    finalizado: true,
     localidad: "",
     marcaAuto: "",
     modeloAuto: "",
@@ -24,37 +24,99 @@ const Register = () => {
     aliasBancario: "",
     aceptaTerminos: false,
     password: "",
+    confirmPassword: "",
   });
+
   const [message, setMessage] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [touchedFields, setTouchedFields] = useState({});
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+  
     setFormData({
       ...formData,
       [name]: type === "checkbox" ? checked : value,
     });
+  
+    setTouchedFields({
+      ...touchedFields,
+      [name]: true,
+    });
   };
+  
 
-  const nextStep = () => setStep(step + 1);
-  const prevStep = () => setStep(step - 1);
+  const validatePassword = () => {
+    const { password, confirmPassword } = formData;
+    if (password.length < 6) {
+      setPasswordError("La contraseña debe tener al menos 6 caracteres.");
+      return false;
+    }
+    if (password !== confirmPassword) {
+      setPasswordError("Las contraseñas no coinciden.");
+      return false;
+    }
+    setPasswordError("");
+    return true;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (step === 4 && !validatePassword()) {
+      return;
+    }
+  
     try {
+      setLoading(true); // Activamos el estado de carga
       const user = await registerUser(formData.email, formData.password);
       await setDoc(doc(db, "usuarios", user.uid), {
         ...formData,
         role: "user",
         timestamp: new Date(),
       });
-      alert("Registro exitoso");
+      
+      setLoading(false); // Desactivamos el estado de carga 
+      alert("Registro exitoso.");
       navigate("/login");
     } catch (error) {
+      setLoading(false); // Desactivamos el estado de carga
+      console.error("Error en el registro:", error);
+  
+      if (error.code === "auth/email-already-in-use") {
+        alert("El correo ya está en uso. Usa otro o intenta iniciar sesión.");
+      } else if (error.code === "auth/weak-password") {
+        alert("La contraseña es muy débil. Intenta con al menos 6 caracteres.");
+      } else if (error.code === "auth/invalid-email") {
+        alert("El formato del email es inválido. Revisa e intenta nuevamente.");
+      } else if (error.code === "auth/network-request-failed") {
+        alert("Error de conexión. Verifica tu internet e intenta otra vez.");
+      } else {
+        alert("Hubo un error inesperado. Intenta nuevamente más tarde.");
+      }
+      
       setMessage("Hubo un error al registrar. Inténtalo nuevamente.");
       setStep(6);
     }
   };
+
+  const nextStep = () => {
+    if (step === 4 && !validatePassword()) {
+      return;
+    }
+    
+    // Evita que se avance automáticamente si el usuario aún no ha aceptado los términos
+    if (step === 5 && !formData.aceptaTerminos) {
+      alert("Debes aceptar los términos y condiciones.");
+      return;
+    }
+  
+    setStep(step + 1);
+  };
+  
+
+  const prevStep = () => setStep(step - 1);
 
   const renderFields = () => {
     switch (step) {
@@ -74,39 +136,52 @@ const Register = () => {
           { name: "licencia", label: "Número de licencia", value: formData.licencia },
         ];
       case 3:
-        return [
-          { name: "aliasBancario", label: "Alias bancario", value: formData.aliasBancario },
-        ];
+        return [{ name: "aliasBancario", label: "Alias bancario", value: formData.aliasBancario }];
       case 4:
         return [
           { name: "password", label: "Contraseña", type: "password", value: formData.password },
+          { name: "confirmPassword", label: "Confirmar contraseña", type: "password", value: formData.confirmPassword },
         ];
       default:
         return [];
     }
   };
 
-  const handleButtonClick = (e) => {
-  e.preventDefault(); // Evitar que se recargue la página
-  if (step === 5) {
-    handleSubmit(e); // Si es el paso 5, ejecuta el submit
-  } else {
-    nextStep(); // En los demás pasos, avanza al siguiente paso
-  }
-};
-
   return (
     <div className="register">
+      {loading ? (
+        <div>Loading...</div> // Muestra un mensaje de carga mientras se registra
+      ) : (
       <AuthForm
         title="Registrar"
-        buttonText={step === 5 ? "Registrar" : "Siguiente"}
-        handleSubmit={handleButtonClick} // Usamos la nueva función para el botón
+        handleSubmit={handleSubmit}
         fields={renderFields()}
-        termsAccepted={formData.aceptaTerminos}
-        setTermsAccepted={(checked) => setFormData({ ...formData, aceptaTerminos: checked })}
+        termsAccepted={step === 5 ? formData.aceptaTerminos : undefined}
+        setTermsAccepted={step === 5 ? (checked) => setFormData({ ...formData, aceptaTerminos: checked }) : undefined}
         handleChange={handleChange}
+        showSubmitButton={false} // No se mostrará el botón de submit
       >
-        {step === 5 && (
+        {passwordError && <p style={{ color: "red" }}>{passwordError}</p>}
+
+        {/* Botones de navegación */}
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px" }}>
+          {step > 1 && (
+            <button type="button" onClick={prevStep} style={{ marginRight: "10px" }}>
+              Anterior
+            </button>
+          )}
+         {step === 6 ? (
+            <button type="button" onClick={handleSubmit}>Registrar</button>
+          ) : (
+            <button type="button" onClick={nextStep}>
+              {step === 5 ? "Confirmar" : "Siguiente"}
+            </button>
+          )}
+
+        </div>
+
+        {/* Paso 6: Confirmación */}
+        {step === 6 && (
           <div>
             <h2>Confirmar Datos</h2>
             <p><strong>Nombre:</strong> {formData.nombre} {formData.apellido}</p>
@@ -116,16 +191,17 @@ const Register = () => {
             <p><strong>Dominio:</strong> {formData.dominioAuto}</p>
             <p><strong>Licencia:</strong> {formData.licencia}</p>
             <p><strong>Alias bancario:</strong> {formData.aliasBancario}</p>
-            <p><strong>Aceptó términos:</strong> {formData.aceptaTerminos ? "Sí" : "No"}</p>
           </div>
         )}
-        {step === 6 && (
+
+        {step === 7 && (
           <div>
             <h2>{message}</h2>
             <button type="button" onClick={() => setStep(1)}>Volver al inicio</button>
           </div>
         )}
       </AuthForm>
+       )}
     </div>
   );
 };

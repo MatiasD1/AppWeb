@@ -20,7 +20,7 @@ export const registerUser = async (email, password) => {
 
     const userCredential = await createUserWithEmailAndPassword(auth, email, password); // Crea un nuevo usuario con la instancia de autenticacion y los datos ingresados
     const user = userCredential.user; 
-
+    
     console.log("✅ Usuario registrado en Firebase Auth:", user.uid);
 
     // Guarda los datos en Authentication
