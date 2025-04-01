@@ -188,15 +188,18 @@ const Admin = () => {
                   <td>{usuario.email}</td>
                   <td>{usuario.localidad}</td>
                   <td>{usuario.estado}</td>
-                  <td>
-                    <input 
-                    type="date" 
-                    name="fechaDeInicio"
-                    value={fechas[usuario.id]?.fechaDeInicio ||
-                      usuario.fechaDeInicio.toDate().toISOString().split("T")[0]}
-                    onChange={(e)=>handleChange(usuario.id,"fechaDeInicio",e.target.value)}
-                    disabled={editandoId!==usuario.id}>
-                    </input>
+                  <td>{usuario.fechaDeInicio? 
+                    (<input 
+                        type="date" 
+                        name="fechaDeInicio"
+                        value={fechas[usuario.id]?.fechaDeInicio ||
+                        usuario.fechaDeInicio.toDate().toISOString().split("T")[0]}
+                        onChange={(e)=>handleChange(usuario.id,"fechaDeInicio",e.target.value)}
+                        disabled={editandoId!==usuario.id}>
+                    </input>) : (
+                      <p>No hay fecha</p>
+                    )
+                  }                    
                   </td>
                   <td>
                     <input 
