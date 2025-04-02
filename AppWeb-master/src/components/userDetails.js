@@ -8,7 +8,8 @@ const UserDetails = () =>{
     const [user, setUser] = useState(null);  
     const [turnos, setTurnos] = useState([{ id: 1, fecha: "" }]);  
     const [guardando, setGuardando] = useState(false);
-    const [solicitudes, setSolicitudes] = useState(null);
+    const [solicitud, setSolicitud] = useState(null);
+
 
     const location = useLocation();
     const id = location.state?.id;
@@ -25,7 +26,7 @@ const UserDetails = () =>{
             if (userSnap.exists()){
                 console.log("Documento encontrado",userSnap.data());
                 setUser(userSnap.data());
-                setSolicitudes(userTurSnap.data());
+                setSolicitud(userTurSnap.data());
             }else{
                 console.log("No existe el usuario");
             }
@@ -113,7 +114,7 @@ const UserDetails = () =>{
             </form>
             <div className="formContainer">
                 <h2>Gestión de Turnos</h2>
-                {solicitudes.estado==="solicitud pendiente"? (
+                {solicitud.estado==="solicitud pendiente"? (
                     turnos.map((turno, index) => (
                     <div key={index} style={{ marginBottom: "10px" }}>
                         <label>Turno {turno.id}:</label>
@@ -125,21 +126,28 @@ const UserDetails = () =>{
                         />
                     </div>
                     ))
-                ):(
+                ):solicitud.estado==="solicitud contestada"?(
                     <>
                     <p>El usuario ya tiene turnos</p>
 
-                    {solicitudes.turnos.map((turno,index)=>(
+                    {solicitud.turnos.map((turno,index)=>(
                         <div key={index} style={{ marginBottom: "10px" }}>
                          <label>Turno {turno.id}:</label>
                          <label>Fecha {turno.fecha.toDate().toISOString().split("T")[0]}</label>
                         </div>   
                     ))                    
                     }
+                    <button className="button-user one" onClick={()=>handleGuardar(id)} disabled={guardando || solicitud.estado!=="solicitud pendiente"}>{guardando ? "Guardando..." : "Guardar Turnos"}</button>
                     </>
                     
+                ):solicitud.estado==="turno reservado"?(
+                    <p>Turno Reservado: {solicitud.fechaColocacion.toDate().toLocaleString().slice(0,19)}</p>
+                ):solicitud.estado==="inactivo"?(
+                    <p>Aún no solicitó turno para la colocación de publicidad</p>
+                ):(
+                    <p>El usuario cuenta con publicidad activa</p>
                 )}
-                <button className="button-user one" onClick={()=>handleGuardar(id)} disabled={guardando || solicitudes.estado!=="solicitud pendiente"}>{guardando ? "Guardando..." : "Guardar Turnos"}</button>
+                
                 
             </div>
         </div>

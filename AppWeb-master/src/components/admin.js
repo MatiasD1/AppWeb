@@ -104,36 +104,42 @@ const Admin = () => {
       try {
         // Obtenemos las nuevas fechas, si no existen tomamos las anteriores
         const nuevasFechas = fechas[id] || {};
-  
+        
+        // Si no hay nueva fecha, se mantiene la original (no se actualiza)
         const fechaDeInicio = nuevasFechas.fechaDeInicio
-        ? ajustarFechaBuenosAires(nuevasFechas.fechaDeInicio)
-        : new Date(usuarios.find((user) => user.id === id).fechaDeInicio);
-      
-      const fechaDeVencimiento = nuevasFechas.fechaDeVencimiento
-        ? ajustarFechaBuenosAires(nuevasFechas.fechaDeVencimiento)
-        : new Date(usuarios.find((user) => user.id === id).fechaDeVencimiento);
-      
+          ? ajustarFechaBuenosAires(nuevasFechas.fechaDeInicio)
+          : usuarios.find((user) => user.id === id).fechaDeInicio.toDate();
+        
+        const fechaDeVencimiento = nuevasFechas.fechaDeVencimiento
+          ? ajustarFechaBuenosAires(nuevasFechas.fechaDeVencimiento)
+          : usuarios.find((user) => user.id === id).fechaDeVencimiento.toDate();
   
-        // Actualizamos el estado local de los usuarios con las fechas convertidas a Timestamp
-        setUsuarios((prev) =>
-          prev.map((user) =>
-            user.id === id
-              ? {
-                  ...user,
-                  fechaDeInicio: Timestamp.fromDate(fechaDeInicio),
-                  fechaDeVencimiento: Timestamp.fromDate(fechaDeVencimiento),
-                }
-              : user
-          )
-        );
+        // Solo actualizamos las fechas si realmente fueron modificadas
+        const cambios = {};
+        if (nuevasFechas.fechaDeInicio) {
+          cambios.fechaDeInicio = Timestamp.fromDate(fechaDeInicio);
+        }
+        if (nuevasFechas.fechaDeVencimiento) {
+          cambios.fechaDeVencimiento = Timestamp.fromDate(fechaDeVencimiento);
+        }
   
-        // Ahora actualizamos Firestore con los valores correctos
-        const userRef = doc(db, "usuarios", id);
-        await updateDoc(userRef, {
-          fechaDeInicio: Timestamp.fromDate(fechaDeInicio),
-          fechaDeVencimiento: Timestamp.fromDate(fechaDeVencimiento),
-        });
+        if (Object.keys(cambios).length > 0) {
+          const userRef = doc(db, "usuarios", id);
+          await updateDoc(userRef, cambios);
   
+          // Actualizamos el estado local de los usuarios con las fechas convertidas a Timestamp
+          setUsuarios((prev) =>
+            prev.map((user) =>
+              user.id === id
+                ? {
+                    ...user,
+                    ...cambios,
+                  }
+                : user
+            )
+          );
+        }
+        
         setEditandoId(null); // Desactivamos el modo de edición
       } catch (error) {
         console.error("Error guardando fechas:", error);
@@ -142,6 +148,7 @@ const Admin = () => {
       setEditandoId(id); // Si no estamos editando, activamos el modo de edición
     }
   };
+  
   
   
     
@@ -226,7 +233,7 @@ const Admin = () => {
                     <button className="button-user one" onClick={()=>navigate("/userDetails",{state:{id:usuario.id}})}>Detalles</button>
                   </td>
                   <td>
-                    <button className="botonBajaUsuario" onClick={()=>handleEdit(usuario.id)}>{editandoId? "Guardar":"Editar"}</button>
+                    <button className="botonBajaUsuario" onClick={()=>handleEdit(usuario.id)} disabled={!usuario.fechaDeInicio || !usuario.fechaDeVencimiento}>{editandoId? "Guardar":"Editar"}</button>
                   </td>
                 </tr>
               ))
