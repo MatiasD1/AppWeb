@@ -1,5 +1,9 @@
 @use './utilities/variables' as *;
 
+.upload-imageContainer{
+  min-height: 100vh;
+}
+
 .upload-image {
     max-width: 500px;
     margin: 40px auto;

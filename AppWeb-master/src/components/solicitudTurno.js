@@ -107,60 +107,63 @@ useEffect(() => {
   return isLoading ? (
     <p>Cargando...</p>
   ) : (
-    <div className="solicitud-container">
+    <>
       <NavBar/>
-      <div className="solicitudContainerBody">
-        <h2>Solicitar Publicidad</h2>
-        <p>
-          {solicitudEnviada 
-            ? "Gracias por confiar en nosotros. Te avisaremos cuando sea aprobada y te enviaremos la fecha y hora de colocación."
+      <div className="solicitud-container">
 
-            : "Haz clic en el botón para enviar tu solicitud de publicidad. El administrador la revisará."}
-        </p>
-        <button className="button-solicitar" onClick={handleSolicitarPublicitar} disabled={loading || solicitudEnviada}>
-          {loading ? "Enviando..." : solicitudEnviada ? "Solicitud Enviada" : "Enviar Solicitud"}
-        </button>
+        <div className="solicitud">
+          <h2>Solicitar Publicidad</h2>
+          <p>
+            {solicitudEnviada 
+              ? "Gracias por confiar en nosotros. Te avisaremos cuando sea aprobada y te enviaremos la fecha y hora de colocación."
+
+              : "Haz clic en el botón para enviar tu solicitud de publicidad. El administrador la revisará."}
+          </p>
+          <button className="button-solicitar" onClick={handleSolicitarPublicitar} disabled={loading || solicitudEnviada}>
+            {loading ? "Enviando..." : solicitudEnviada ? "Solicitud Enviada" : "Enviar Solicitud"}
+          </button>
+        </div>
+        <br/>
+        <h2>Turnos disponibles</h2>
+        <div>
+          {solicitud?.turnos && !solicitud?.fechaColocacion? (
+            <>
+              <select
+                onChange={(e) => {
+                  const index = parseInt(e.target.value, 10);
+                  if (!isNaN(index)) {
+                    setTurnoSeleccionado(solicitud.turnos[index]); // Guardar objeto turno completo
+                  }
+                }}
+              >
+                <option value="">Seleccione un turno</option>
+                {solicitud.turnos.map((turno, index) => {
+                  if (!turno.fecha || typeof turno.fecha.toDate !== "function") {
+                    console.error("Formato de turno incorrecto:", turno);
+                    return null;
+                  }
+
+                  const fecha = turno.fecha.toDate();
+                  const fechaFormateada = fecha.toISOString().split("T")[0];
+
+                  return (
+                    <option key={index} value={index}>
+                      {fechaFormateada}
+                    </option>
+                  );
+                })}
+              </select>
+
+              <button onClick={manejarSeleccion} disabled={solicitud.fechaColocacion}>
+                Aceptar
+              </button>
+            </>
+          ) : (
+            <p>Aún no hay turnos disponibles o Ya se Reservó un turno</p>
+          )}
+        </div>
       </div>
-      <br/>
-      <h2>Turnos disponibles</h2>
-      <div>
-        {solicitud?.turnos && !solicitud?.fechaColocacion? (
-          <>
-            <select
-              onChange={(e) => {
-                const index = parseInt(e.target.value, 10);
-                if (!isNaN(index)) {
-                  setTurnoSeleccionado(solicitud.turnos[index]); // Guardar objeto turno completo
-                }
-              }}
-            >
-              <option value="">Seleccione un turno</option>
-              {solicitud.turnos.map((turno, index) => {
-                if (!turno.fecha || typeof turno.fecha.toDate !== "function") {
-                  console.error("Formato de turno incorrecto:", turno);
-                  return null;
-                }
-
-                const fecha = turno.fecha.toDate();
-                const fechaFormateada = fecha.toISOString().split("T")[0];
-
-                return (
-                  <option key={index} value={index}>
-                    {fechaFormateada}
-                  </option>
-                );
-              })}
-            </select>
-
-            <button onClick={manejarSeleccion} disabled={solicitud.fechaColocacion}>
-              Aceptar
-            </button>
-          </>
-        ) : (
-          <p>Aún no hay turnos disponibles o Ya se Reservó un turno</p>
-        )}
-      </div>
-    </div>
+    </>
   );
 };
 
