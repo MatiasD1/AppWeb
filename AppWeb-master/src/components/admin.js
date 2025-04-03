@@ -88,9 +88,13 @@ const Admin = () => {
   const handleChange = (id, campo, valor) => {
     setFechas((prev) => ({
       ...prev,
-      [id]: { ...prev[id], [campo]: valor },
+      [id]: {
+        ...prev[id],
+        [campo]: valor === "" ? null : valor, // Guarda null si el input está vacío
+      },
     }));
   };
+  
   
   const ajustarFechaBuenosAires = (fechaStr) => {
     const fecha = new Date(fechaStr);
@@ -105,23 +109,32 @@ const Admin = () => {
         // Obtenemos las nuevas fechas, si no existen tomamos las anteriores
         const nuevasFechas = fechas[id] || {};
         
-        // Si no hay nueva fecha, se mantiene la original (no se actualiza)
+        const usuarioActual = usuarios.find((user) => user.id === id);
+
         const fechaDeInicio = nuevasFechas.fechaDeInicio
           ? ajustarFechaBuenosAires(nuevasFechas.fechaDeInicio)
-          : usuarios.find((user) => user.id === id).fechaDeInicio.toDate();
-        
+          : usuarioActual.fechaDeInicio
+          ? usuarioActual.fechaDeInicio.toDate()
+          : null;
+
         const fechaDeVencimiento = nuevasFechas.fechaDeVencimiento
           ? ajustarFechaBuenosAires(nuevasFechas.fechaDeVencimiento)
-          : usuarios.find((user) => user.id === id).fechaDeVencimiento.toDate();
+          : usuarioActual.fechaDeVencimiento
+          ? usuarioActual.fechaDeVencimiento.toDate()
+          : null;
+
   
-        // Solo actualizamos las fechas si realmente fueron modificadas
-        const cambios = {};
-        if (nuevasFechas.fechaDeInicio) {
-          cambios.fechaDeInicio = Timestamp.fromDate(fechaDeInicio);
-        }
-        if (nuevasFechas.fechaDeVencimiento) {
-          cambios.fechaDeVencimiento = Timestamp.fromDate(fechaDeVencimiento);
-        }
+          const cambios = {};
+          if (nuevasFechas.fechaDeInicio !== undefined) {
+            cambios.fechaDeInicio = nuevasFechas.fechaDeInicio
+              ? Timestamp.fromDate(fechaDeInicio)
+              : null; // Permitir valores nulos
+          }
+          if (nuevasFechas.fechaDeVencimiento !== undefined) {
+            cambios.fechaDeVencimiento = nuevasFechas.fechaDeVencimiento
+              ? Timestamp.fromDate(fechaDeVencimiento)
+              : null; // Permitir valores nulos
+          }
   
         if (Object.keys(cambios).length > 0) {
           const userRef = doc(db, "usuarios", id);
@@ -195,29 +208,29 @@ const Admin = () => {
                   <td>{usuario.email}</td>
                   <td>{usuario.localidad}</td>
                   <td>{usuario.estado}</td>
-                  <td>{usuario.fechaDeInicio? 
-                    (<input 
-                        type="date" 
-                        name="fechaDeInicio"
-                        value={fechas[usuario.id]?.fechaDeInicio ||
-                        usuario.fechaDeInicio.toDate().toISOString().split("T")[0]}
-                        onChange={(e)=>handleChange(usuario.id,"fechaDeInicio",e.target.value)}
-                        disabled={editandoId!==usuario.id}>
-                    </input>) : (
-                      <p>No hay fecha</p>
-                    )
-                  }                    
+                  <td>
+                    <input
+                      type="date"
+                      name="fechaDeInicio"
+                      value={fechas[usuario.id]?.fechaDeInicio ||
+                        (usuario.fechaDeInicio ? usuario.fechaDeInicio.toDate().toISOString().split("T")[0] : "")}
+                      onChange={(e) => handleChange(usuario.id, "fechaDeInicio", e.target.value)}
+                      disabled={!usuario.fechaDeInicio || editandoId !== usuario.id}
+                      
+                    />
                   </td>
                   <td>
-                    <input 
-                    type="date" 
-                    name="fechaDeVencimiento"
-                    value={fechas[usuario.id]?.fechaDeVencimiento ||
-                      usuario.fechaDeVencimiento.toDate().toISOString().split("T")[0]}
-                    onChange={(e)=>handleChange(usuario.id,"fechaDeVencimiento",e.target.value)}
-                    disabled={editandoId!==usuario.id}>
-                    </input>
+                    <input
+                      type="date"
+                      name="fechaDeVencimiento"
+                      value={fechas[usuario.id]?.fechaDeVencimiento ||
+                        (usuario.fechaDeVencimiento ? usuario.fechaDeVencimiento.toDate().toISOString().split("T")[0] : "")}
+                      onChange={(e) => handleChange(usuario.id, "fechaDeVencimiento", e.target.value)}
+                      disabled={!usuario.fechaDeVencimiento || editandoId !== usuario.id}
+                     
+                    />
                   </td>
+
                   <td>{usuario.finalizado?"Si":"No"}</td>
 
                   <td >{localStorage.getItem(`uploadedImage_${usuario?.email}`) && (
@@ -233,8 +246,11 @@ const Admin = () => {
                     <button className="button-user one" onClick={()=>navigate("/userDetails",{state:{id:usuario.id}})}>Detalles</button>
                   </td>
                   <td>
-                    <button className="botonBajaUsuario" onClick={()=>handleEdit(usuario.id)} disabled={!usuario.fechaDeInicio || !usuario.fechaDeVencimiento}>{editandoId? "Guardar":"Editar"}</button>
+                    <button className="botonBajaUsuario" onClick={() => handleEdit(usuario.id)}>
+                      {editandoId === usuario.id ? "Guardar" : "Editar"}
+                    </button>
                   </td>
+
                 </tr>
               ))
             )}
