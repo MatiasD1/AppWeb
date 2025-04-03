@@ -110,9 +110,10 @@ useEffect(() => {
   return isLoading ? (
     <p>Cargando...</p>
   ) : solicitud.estado==="inactivo"?(
-    
+    <>
+    <NavBar/>
     <div className="solicitud-container">
-      <NavBar/>
+      
       <div className="solicitudContainerBody">
         <h2>Solicitar Publicidad</h2>
         <p>
@@ -126,9 +127,12 @@ useEffect(() => {
         </button>
       </div>
     </div>
+    </>
     ):solicitud.estado==="solicitud contestada"?(
+    <>
+    <NavBar/>
     <div className="solicitudContainerBody">
-      <NavBar/>
+      
       <br/>
       <h2>Turnos disponibles</h2>
         <div>         
@@ -163,24 +167,31 @@ useEffect(() => {
             </button>
         </div>      
     </div>
+    </>
     ):solicitud.estado==="solicitud pendiente"?(
+        <>
+        <NavBar/>
         <div className="solicitudContainerBody">  
-          <NavBar/>
           <h2>Aún no hay turnos disponibles</h2>
         </div>
+        </>
     ):solicitud.estado==="turno reservado"?(
+      <>
+      <NavBar/>
       <div className="solicitudContainerBody">
-        <NavBar/>
         <h2>El usuario {usuario.nombre} {usuario.apellido} tiene turno para la fecha {solicitud.fechaColocacion.toDate().toLocaleString().slice(0,19)}</h2>
       </div>
+      </>
     ):(
+      <>
+      <NavBar/>
       <div className="solicitudContainerBody">
-        <NavBar/>
         <h2>
           El usuario tiene publicidad activa desde {usuario.fechaDeInicio ? usuario.fechaDeInicio.toDate().toLocaleString().slice(0, 19) : "Fecha no disponible"} 
           hasta {usuario.fechaDeVencimiento ? usuario.fechaDeVencimiento.toDate().toLocaleString().slice(0, 19) : "Fecha no disponible"}
         </h2>
       </div>
+      </>
     )
 };
 
