@@ -127,7 +127,7 @@ useEffect(() => {
       </div>
     </div>
     ):solicitud.estado==="solicitud contestada"?(
-      <>
+    <div className="solicitudContainerBody">
       <NavBar/>
       <br/>
       <h2>Turnos disponibles</h2>
@@ -162,19 +162,19 @@ useEffect(() => {
               Aceptar
             </button>
         </div>      
-      </>
+    </div>
     ):solicitud.estado==="solicitud pendiente"?(
-        <div>  
+        <div className="solicitudContainerBody">  
           <NavBar/>
           <h2>Aún no hay turnos disponibles</h2>
         </div>
     ):solicitud.estado==="turno reservado"?(
-      <div>
+      <div className="solicitudContainerBody">
         <NavBar/>
         <h2>El usuario {usuario.nombre} {usuario.apellido} tiene turno para la fecha {solicitud.fechaColocacion.toDate().toLocaleString().slice(0,19)}</h2>
       </div>
     ):(
-      <div>
+      <div className="solicitudContainerBody">
         <NavBar/>
         <h2>
           El usuario tiene publicidad activa desde {usuario.fechaDeInicio ? usuario.fechaDeInicio.toDate().toLocaleString().slice(0, 19) : "Fecha no disponible"} 
