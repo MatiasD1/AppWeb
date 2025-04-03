@@ -175,6 +175,35 @@ const Admin = () => {
       <Link to={`/noAceptados`} state={{ usuarios }} className="botonNoAceptados">
           No Aceptados
         </Link>
+        <h2>Lista de administradores</h2>
+            {usuarios.length > 0 ? (
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>Rol</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {usuarios
+                        .filter(usuario => usuario.role==="admin")
+                        .map((admin) => (
+                            <tr key={admin.id}>
+                                <td><button className="button-user one"  onClick={()=>CambioDeRol(admin.id)} disabled={admin.nombre=="Martin"}>{admin.role}</button></td>
+                                <td>{admin.nombre}</td>
+                                <td>{admin.apellido}</td>
+                                <td>{admin.email}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            ) : (
+                <p>No hay administradores registrados.</p>
+            )}
+        <br/>    
+        <h2>Lista de Usuarios Registrados</h2>
         <table>
           <thead>
             <tr>
@@ -199,7 +228,7 @@ const Admin = () => {
               </tr>
             ) : (
               usuarios
-              .filter(usuario => usuario.aceptado === true) 
+              .filter(usuario => usuario.aceptado === true && usuario.role==="user") 
               .map((usuario) => (
                 <tr key={usuario.id}>
                   

@@ -43,6 +43,8 @@ $table-border: #ddd;
       max-width: 150px;
       overflow: hidden;
       text-overflow: ellipsis;
+      align-items: center;
+      justify-items: center;
     }
 
     th {

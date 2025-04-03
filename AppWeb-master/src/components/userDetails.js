@@ -6,7 +6,8 @@ import { useLocation } from "react-router-dom";
 
 const UserDetails = () =>{
     const [user, setUser] = useState(null);  
-    const [turnos, setTurnos] = useState([{ id: 1, fecha: "" }]);  
+    const [turnos, setTurnos] = useState([{ id: 1, fecha: "",hora:"", establecimiento:"" }]); 
+    const [localidad, setLocalidad] = useState(""); 
     const [guardando, setGuardando] = useState(false);
     const [solicitud, setSolicitud] = useState(null);
 
@@ -27,6 +28,7 @@ const UserDetails = () =>{
                 console.log("Documento encontrado",userSnap.data());
                 setUser(userSnap.data());
                 setSolicitud(userTurSnap.data());
+                setLocalidad(userSnap.data().localidad);
             }else{
                 console.log("No existe el usuario");
             }
@@ -40,14 +42,14 @@ const UserDetails = () =>{
     const imageUser =  localStorage.getItem(`uploadedImage_${user?.email}`);
 
 
-    const handleChange = (index, value) => {
+    const handleChange = (index, field, value) => {
         const nuevosTurnos = [...turnos];
-        nuevosTurnos[index].fecha = value;
-    
-        if (index === turnos.length - 1 && value !== "") {
-          nuevosTurnos.push({ id: turnos.length + 1, fecha: "" });
+        nuevosTurnos[index][field] = value;
+
+        if (index === turnos.length - 1 && nuevosTurnos[index].fecha && nuevosTurnos[index].hora && nuevosTurnos[index].establecimiento) {
+            nuevosTurnos.push({ id: turnos.length + 1, fecha: "", hora: "", establecimiento: "" });
         }
-    
+
         setTurnos(nuevosTurnos);
     };
     
@@ -57,17 +59,20 @@ const UserDetails = () =>{
             const userRefTur = doc(db,"solicitudes",id);
             const userRef = doc(db, "usuarios", id);
             const turnosValidos = turnos
-                .filter((turno) => turno.fecha) // Solo turnos con fecha
-                .map((turno) => ({
-                    fecha: Timestamp.fromDate(new Date(ajustarFechaBuenosAires(turno.fecha))),
-                }));
+            .filter((turno) => turno.fecha && turno.hora && turno.establecimiento) // Solo turnos completos
+            .map((turno) => ({
+                fecha: Timestamp.fromDate(new Date(ajustarFechaBuenosAires(turno.fecha, turno.hora))),
+                hora: turno.hora,
+                localidad: localidad,
+                establecimiento: turno.establecimiento
+            }));
     
             
             await updateDoc(userRef, { estado:"pendiente" });
             
             await updateDoc(userRefTur,{ turnos: turnosValidos,estado:"solicitud contestada"});
             
-            setTurnos([{ id: 1, fecha: "" }]);
+            setTurnos([{ id: 1, fecha: "", hora: "", establecimiento: ""  }]);
     
             alert("Turnos guardados correctamente.");
         } catch (error) {
@@ -114,31 +119,28 @@ const UserDetails = () =>{
             </form>
             <div className="formContainer">
                 <h2>Gestión de Turnos</h2>
-                {solicitud.estado==="solicitud pendiente"? (
+                {solicitud.estado === "solicitud pendiente" ? (
                     turnos.map((turno, index) => (
-                    <div key={index} style={{ marginBottom: "10px" }}>
-                        <label>Turno {turno.id}:</label>
-                        <input
-                            type="date"
-                            name="fecha"
-                            value={turno.fecha instanceof Timestamp ? turno.fecha.toDate().toISOString().split("T")[0] : turno.fecha}
-                            onChange={(e) => handleChange(index, e.target.value)}
-                        />
-                    </div>
-                    ))
-                ):solicitud.estado==="solicitud contestada"?(
-                    <>
-                    <p>El usuario ya tiene turnos</p>
-
-                    {solicitud.turnos.map((turno,index)=>(
                         <div key={index} style={{ marginBottom: "10px" }}>
-                         <label>Turno {turno.id}:</label>
-                         <label>Fecha {turno.fecha.toDate().toISOString().split("T")[0]}</label>
-                        </div>   
-                    ))                    
-                    }
-                    <button className="button-user one" onClick={()=>handleGuardar(id)} disabled={guardando || solicitud.estado!=="solicitud pendiente"}>{guardando ? "Guardando..." : "Guardar Turnos"}</button>
-                    </>
+                            <label>Turno {turno.id}:</label>
+                            <input
+                                type="date"
+                                value={turno.fecha}
+                                onChange={(e) => handleChange(index, "fecha", e.target.value)}
+                            />
+                            <input
+                                type="time"
+                                value={turno.hora}
+                                onChange={(e) => handleChange(index, "hora", e.target.value)}
+                            />
+                            <input
+                                type="text"
+                                placeholder="Establecimiento"
+                                value={turno.establecimiento}
+                                onChange={(e) => handleChange(index, "establecimiento", e.target.value)}
+                            />
+                        </div>
+                    ))
                     
                 ):solicitud.estado==="turno reservado"?(
                     <p>Turno Reservado: {solicitud.fechaColocacion.toDate().toLocaleString().slice(0,19)}</p>
@@ -147,7 +149,7 @@ const UserDetails = () =>{
                 ):(
                     <p>El usuario cuenta con publicidad activa</p>
                 )}
-                
+                <button className="button-user one" onClick={()=>handleGuardar(id)} disabled={guardando || solicitud.estado!=="solicitud pendiente"}>{guardando ? "Guardando..." : "Guardar Turnos"}</button> 
                 
             </div>
         </div>
