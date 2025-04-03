@@ -4,27 +4,33 @@ $user-name-color: #e53e3e; // Color rojo para el nombre del usuario
 
 // Navbar estilos
 .navbar {
+  position: fixed; // Mantiene el navbar en la parte superior
+  top: 0;
+  left: 0;
+  width: 100%; // Ocupa todo el ancho de la pantalla
+  height: 60px; // Tamaño fijo para mantener consistencia
   display: flex;
   align-items: center;
   background-color: $primary-color;
   color: $primary-color;
-  padding: 1rem;
-  width: 100%; // Para que el navbar se expanda de margen a margen 
+  padding: 0 1rem;
+  z-index: 1000; // Asegura que quede por encima del contenido
 
-    .logo {
-      height: 40px; // Ajusta el tamaño del logo según sea necesario
-      margin-left: 3rem;
-    }
+  .logo {
+    height: 40px; 
+    margin-left: 1rem;
+    cursor: pointer;
+  }
 
   .nav-right {
     display: flex;
     align-items: center;
-    margin-left: auto; // Empuja esta sección a la derecha
-    margin-right: 2rem;
+    margin-left: auto; // Empuja la sección a la derecha
+    margin-right: 1rem;
 
     .user-name {
       color: $user-name-color;
-      margin-right: 1rem; // Espacio entre el nombre y el botón
+      margin-right: 1rem;
       font-weight: 600;
       font-size: 1rem;
     }
@@ -39,13 +45,41 @@ $user-name-color: #e53e3e; // Color rojo para el nombre del usuario
       padding: 0.3rem 0.7rem;
       transition: background-color 0.2s ease-in-out;
       border: none;
-      background-color: #000000;
-      justify-content: center;
-      align-items: center;
+      background-color: black;
 
       &:hover {
-        background-color: #e53e3e;
+        background-color: $user-name-color;
       }
+    }
+  }
+}
+
+// Evita que el contenido quede tapado por el navbar
+body {
+  padding-top: 60px;
+}
+
+// Media queries para responsividad
+@media (max-width: 767px) {
+  .navbar {
+    height: 50px; // Reduce el tamaño en móviles si es necesario
+    padding: 0 0.5rem;
+  }
+  
+  .logo {
+    height: 35px; 
+  }
+
+  .nav-right {
+    margin-right: 0.5rem;
+    
+    .user-name {
+      font-size: 0.9rem;
+    }
+    
+    .logout-btn {
+      font-size: 0.9rem;
+      padding: 0.2rem 0.5rem;
     }
   }
 }

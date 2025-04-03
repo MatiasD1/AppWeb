@@ -64,22 +64,24 @@ const Login = () => {
   
 
   // Define los 2 campos para enviar a AuthForm 
-  const fields = [
-    { 
-      name: "email", 
-      label: "Correo electrónico", 
-      type: "email", 
-      value: email, 
-      setValue: setEmail 
-    },
-    { 
-      name: "password", 
-      label: "Contraseña", 
-      type: "password", 
-      value: password, 
-      setValue: setPassword 
-    }
-  ];
+const fields = [
+  { 
+    name: "email", 
+    label: "Correo electrónico", 
+    type: "email", 
+    value: email, 
+    setValue: setEmail, 
+    autoComplete: "email" // Mantiene la autocompletación para el email
+  },
+  { 
+    name: "password", 
+    label: "Contraseña", 
+    type: "password", 
+    value: password, 
+    setValue: setPassword, 
+    autoComplete: "new-password" // Evita que el navegador rellene la contraseña
+  }
+];
 
   return (
     <div className="login">

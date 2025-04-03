@@ -132,19 +132,21 @@ const UploadImage = () => {
   if (!user) return <p>Cargando usuario...</p>
 
   return (
-    <div>
-      <div><NavBar/></div>
-      <div className="upload-image">
-        <h3>Subir Imagen</h3>
-        <p>Usuario: {user?.nombre}</p>
-        <p>Email: {user?.email}</p>
-        <input type="file" accept="image/*" onChange={handleFileChange} />
-        {preview && <img src={preview} alt="Vista previa" width="200" />}
-        <button onClick={handleUpload}>Enviar mail</button>
-        {preview && <button onClick={handleDelete}>Eliminar Imagen</button>}
+    <>
+      <NavBar />
+      <div className="upload-imageContainer">{/*Contenedor que fija el alto de la pagina*/}
+        <div className="upload-image">
+          <h3>Subir Imagen</h3>
+          <p>Usuario: {user?.nombre}</p>
+          <p>Email: {user?.email}</p>
+          <input type="file" accept="image/*" onChange={handleFileChange} />
+          {preview && <img src={preview} alt="Vista previa" width="200" />}
+          <button onClick={handleUpload}>Enviar mail</button>
+          {preview && <button onClick={handleDelete}>Eliminar Imagen</button>}
+        </div>
       </div>
-    </div>
-  );
+    </>
+  );  
 };
 
 export default UploadImage;

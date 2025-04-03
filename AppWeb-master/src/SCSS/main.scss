@@ -1,5 +1,6 @@
 @use './utilities/variables';
 @use './utilities/fonts';
+@use './globals';
 @use './authForm';
 @use './login'; 
 @use './navBar';
@@ -9,5 +10,6 @@
 @use './user'; 
 @use './solicitudTurno';
 @use './register';
-@use './app'
+@use './uploadImage';
+@use './app';
 

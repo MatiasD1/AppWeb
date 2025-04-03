@@ -1,11 +1,9 @@
-* {
-    margin: 0;
-}
 .login{
+    display: flex;
+    justify-content: center;
     height: 100vh;
     background-image: url('../img/trafico.jpg');
     background-size: cover; /* Ajusta la imagen al tamaño del contenedor */
     background-position: center; /* Centra la imagen */
     background-repeat: no-repeat; /* No repetir la imagen */
-
 }
