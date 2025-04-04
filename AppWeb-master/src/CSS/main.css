@@ -317,6 +317,8 @@ body {
   max-width: 150px;
   overflow: hidden;
   text-overflow: ellipsis;
+  align-items: center;
+  justify-items: center;
 }
 .table-container table th {
   background-color: #b60043;
