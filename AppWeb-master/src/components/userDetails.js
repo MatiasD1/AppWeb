@@ -15,6 +15,8 @@ const UserDetails = () =>{
     const location = useLocation();
     const id = location.state?.id;
 
+    
+
     useEffect(()=>{
     
         console.log("ID recibido en UserDetails:", id);
@@ -150,7 +152,7 @@ const UserDetails = () =>{
                     <p>El usuario cuenta con publicidad activa</p>
                 )}
                 <button className="button-user one" onClick={()=>handleGuardar(id)} disabled={guardando || solicitud.estado!=="solicitud pendiente"}>{guardando ? "Guardando..." : "Guardar Turnos"}</button> 
-                
+               
             </div>
         </div>
     )
