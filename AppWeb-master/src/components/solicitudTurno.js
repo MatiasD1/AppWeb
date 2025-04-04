@@ -16,14 +16,9 @@ const SolicitudTurno = () => {
   const [usuario, setUsuario] = useState(null);
 
   
-  const eventosCalendly = {
-    "Buenos Aires": "https://calendly.com/evento-buenos-aires",
-    "Córdoba": "https://calendly.com/evento-cordoba",
-    "Rosario": "https://calendly.com/evento-rosario",
-    "Mar del Plata":"https://calendly.com/agusgioia/new-meeting"
-  };
 
-  const eventoUrl = eventosCalendly[usuario?.localidad];
+  const token = process.env.REACT_APP_CALENDLY_TOKEN;
+  const eventoUrl = "https://calendly.com/agusgioia/publicidad-mar-del-plata";
 
   useEffect(() => {
     const verificarSolicitud = async () => {
@@ -96,48 +91,82 @@ const SolicitudTurno = () => {
   };
 
 
-  const getFechaEventoCalendly = async (eventoUri) => {
-    const token = process.env.REACT_APP_CALENDLY_TOKEN;
-    console.log("Token:", process.env.REACT_APP_CALENDLY_TOKEN);
-    try {
-      const response = await fetch(eventoUri, {
-        method: "GET",
-        headers: {
-          "Authorization":  `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-  
-      if (!response.ok) {
-        throw new Error("Error al obtener evento desde Calendly");
-      }
-  
-      const data = await response.json();
-      return data.resource?.start_time; // Es un string ISO: "2025-04-03T19:00:00.000Z"
-    } catch (error) {
-      console.error("❌ Error al obtener la fecha del evento:", error);
-      return null;
-    }
-  };
-  
-
   const guardarTurno = useCallback(async (evento) => {
     try {
-      console.log("Ejecutando guardar turno");
+      console.log("🟡 Ejecutando guardar turno");
+  
+      const getFechaEventoCalendly = async (eventoUri) => {
+        try {
+          const response = await fetch(eventoUri, {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+  
+          if (!response.ok) {
+            throw new Error("Error al obtener evento desde Calendly");
+          }
+  
+          const data = await response.json();
+          return data.resource?.start_time;
+        } catch (error) {
+          console.error("❌ Error al obtener la fecha del evento:", error);
+          return null;
+        }
+      };
+  
+      const obtenerDetalleInvitee = async (inviteeUri) => {
+        try {
+          const response = await fetch(inviteeUri, {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+  
+          if (!response.ok) {
+            throw new Error("Error al obtener detalles del invitado");
+          }
+  
+          const data = await response.json();
+          return data.resource;
+        } catch (error) {
+          console.error("❌ Error al obtener detalles del invitado:", error);
+          return null;
+        }
+      };
+  
       const user = auth.currentUser;
       if (!user) throw new Error("Usuario no autenticado");
   
       const solicitudRef = doc(db, "solicitudes", user.uid);
-      const startTime = await getFechaEventoCalendly(evento.event.uri); // Convierte a Date
+      const startTime = await getFechaEventoCalendly(evento.event.uri);
       if (!startTime) throw new Error("No se pudo obtener la fecha del evento");
-
+  
+      const detalleInvitee = await obtenerDetalleInvitee(evento.invitee.uri);
+      const respuestas = detalleInvitee.questions_and_answers;
+      const localidadCalendly = respuestas.find(q =>
+        q.question.toLowerCase().includes("localidad")
+      )?.answer;
+  
+      console.log("📍 Localidad seleccionada:", localidadCalendly);
+  
+      if (localidadCalendly !== usuario.localidad) {
+        alert(`❌ Error: seleccionaste "${localidadCalendly}", pero tu localidad registrada es "${usuario.localidad}".`);
+        return;
+      }
+  
       const fecha = Timestamp.fromDate(new Date(startTime));
       await updateDoc(solicitudRef, {
         fechaColocacion: fecha,
         localidad: usuario.localidad,
         estado: "turno reservado",
       });
-      console.log("documento actualizado");
+  
+      console.log("✅ Documento actualizado en Firestore");
       setSolicitud((prev) => ({
         ...prev,
         fechaColocacion: fecha,
@@ -149,7 +178,8 @@ const SolicitudTurno = () => {
     } catch (error) {
       console.error("❌ Error al guardar en Firestore:", error);
     }
-  },[usuario]);
+  }, [usuario,token]);
+  
   
   useEffect(() => {
     const handleMessage = (event) => {
@@ -193,6 +223,11 @@ const SolicitudTurno = () => {
     <div className="solicitudContainerBody">
       <br/>
       <h2>Turnos disponibles</h2>
+      <p>
+        Estás en la localidad <strong>{usuario.localidad}</strong>.  
+        Asegurate de seleccionar esa misma localidad en el formulario de Calendly.
+      </p>
+
       <InlineWidget
             url={eventoUrl}
             styles={{ height: "600px", width: "100%" }}
@@ -215,6 +250,7 @@ const SolicitudTurno = () => {
       <NavBar/>
       <div className="solicitudContainerBody">
         <h2>Usuario Activo</h2>
+        <h2>Publicidad desde {usuario.fechaDeInicio.toDate().toLocaleString().slice(0,19)} hasta {usuario.fechaDeVencimiento.toDate().toLocaleString().slice(0,19)}</h2>
       </div>
       </>
     )
