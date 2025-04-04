@@ -191,7 +191,7 @@ const Admin = () => {
                         .filter(usuario => usuario.role==="admin")
                         .map((admin) => (
                             <tr key={admin.id}>
-                                <td><button className="button-user one"  onClick={()=>CambioDeRol(admin.id)} disabled={admin.nombre=="Martin"}>{admin.role}</button></td>
+                                <td><button className="button-user one"  onClick={()=>CambioDeRol(admin.id)} disabled={admin.nombre==="Martin"}>{admin.role}</button></td>
                                 <td>{admin.nombre}</td>
                                 <td>{admin.apellido}</td>
                                 <td>{admin.email}</td>
