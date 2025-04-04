@@ -1,4 +1,4 @@
-import { doc, getDoc, updateDoc, Timestamp } from "firebase/firestore";
+import { doc, getDoc} from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { db } from "../firebaseConfig";
 import NavBar from "./navBar";
@@ -6,31 +6,19 @@ import { useLocation } from "react-router-dom";
 
 const UserDetails = () =>{
     const [user, setUser] = useState(null);  
-    const [turnos, setTurnos] = useState([{ id: 1, fecha: "",hora:"", establecimiento:"" }]); 
-    const [localidad, setLocalidad] = useState(""); 
-    const [guardando, setGuardando] = useState(false);
-    const [solicitud, setSolicitud] = useState(null);
-
-
     const location = useLocation();
     const id = location.state?.id;
-
-    
-
+ 
     useEffect(()=>{
     
         console.log("ID recibido en UserDetails:", id);
         const fetchUser = async () =>{
             const userRef =doc(db,"usuarios", id);
             const userSnap = await getDoc(userRef);
-            const userRefTur = doc(db,"solicitudes",id);
-            const userTurSnap = await getDoc(userRefTur);
 
             if (userSnap.exists()){
                 console.log("Documento encontrado",userSnap.data());
                 setUser(userSnap.data());
-                setSolicitud(userTurSnap.data());
-                setLocalidad(userSnap.data().localidad);
             }else{
                 console.log("No existe el usuario");
             }
@@ -42,55 +30,7 @@ const UserDetails = () =>{
     }, [id]);
 
     const imageUser =  localStorage.getItem(`uploadedImage_${user?.email}`);
-
-
-    const handleChange = (index, field, value) => {
-        const nuevosTurnos = [...turnos];
-        nuevosTurnos[index][field] = value;
-
-        if (index === turnos.length - 1 && nuevosTurnos[index].fecha && nuevosTurnos[index].hora && nuevosTurnos[index].establecimiento) {
-            nuevosTurnos.push({ id: turnos.length + 1, fecha: "", hora: "", establecimiento: "" });
-        }
-
-        setTurnos(nuevosTurnos);
-    };
     
-    const handleGuardar = async (id) => {
-        try {
-            setGuardando(true);
-            const userRefTur = doc(db,"solicitudes",id);
-            const userRef = doc(db, "usuarios", id);
-            const turnosValidos = turnos
-            .filter((turno) => turno.fecha && turno.hora && turno.establecimiento) // Solo turnos completos
-            .map((turno) => ({
-                fecha: Timestamp.fromDate(new Date(ajustarFechaBuenosAires(turno.fecha, turno.hora))),
-                hora: turno.hora,
-                localidad: localidad,
-                establecimiento: turno.establecimiento
-            }));
-    
-            
-            await updateDoc(userRef, { estado:"pendiente" });
-            
-            await updateDoc(userRefTur,{ turnos: turnosValidos,estado:"solicitud contestada"});
-            
-            setTurnos([{ id: 1, fecha: "", hora: "", establecimiento: ""  }]);
-    
-            alert("Turnos guardados correctamente.");
-        } catch (error) {
-            console.error("Error al guardar turnos:", error);
-        } finally {
-            setGuardando(false);
-        }
-    };
-    
-    const ajustarFechaBuenosAires = (fechaStr) => {
-        const fecha = new Date(fechaStr);
-        fecha.setUTCHours(3, 0, 0, 0); // Ajustar a medianoche en Buenos Aires (UTC-3)
-        return fecha;
-      };
-
-
     if (!user) return <p>Cargando usuario...</p>
 
     return (
@@ -119,41 +59,6 @@ const UserDetails = () =>{
                 }
                 
             </form>
-            <div className="formContainer">
-                <h2>Gestión de Turnos</h2>
-                {solicitud.estado === "solicitud pendiente" ? (
-                    turnos.map((turno, index) => (
-                        <div key={index} style={{ marginBottom: "10px" }}>
-                            <label>Turno {turno.id}:</label>
-                            <input
-                                type="date"
-                                value={turno.fecha}
-                                onChange={(e) => handleChange(index, "fecha", e.target.value)}
-                            />
-                            <input
-                                type="time"
-                                value={turno.hora}
-                                onChange={(e) => handleChange(index, "hora", e.target.value)}
-                            />
-                            <input
-                                type="text"
-                                placeholder="Establecimiento"
-                                value={turno.establecimiento}
-                                onChange={(e) => handleChange(index, "establecimiento", e.target.value)}
-                            />
-                        </div>
-                    ))
-                    
-                ):solicitud.estado==="turno reservado"?(
-                    <p>Turno Reservado: {solicitud.fechaColocacion.toDate().toLocaleString().slice(0,19)}</p>
-                ):solicitud.estado==="inactivo"?(
-                    <p>Aún no solicitó turno para la colocación de publicidad</p>
-                ):(
-                    <p>El usuario cuenta con publicidad activa</p>
-                )}
-                <button className="button-user one" onClick={()=>handleGuardar(id)} disabled={guardando || solicitud.estado!=="solicitud pendiente"}>{guardando ? "Guardando..." : "Guardar Turnos"}</button> 
-               
-            </div>
         </div>
     )
 }
