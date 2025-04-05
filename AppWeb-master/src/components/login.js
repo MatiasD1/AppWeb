@@ -7,10 +7,12 @@ import AuthForm from "./authForm"; // Importa el componente reutilizable
 import { auth } from "../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { Link } from "react-router-dom";
+import Loading from "./Loading";
 
 const Login = () => {
   const [email, setEmail] = useState(""); // Valores que ingresa el usuario
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(true); // Nuevo estado
   const navigate = useNavigate(); // Hook para redirigir tras la autenticación
 
   useEffect(() => {
@@ -26,6 +28,7 @@ const Login = () => {
           navigate(role === "admin" ? "/admin" : "/user"); // 🔹 Redirige según el rol
         }
       }
+      setLoading(false); // Finaliza la carga tras verificación
     });
 
     return () => unsubscribe(); // 🔹 Limpia el listener al desmontar
@@ -40,16 +43,19 @@ const Login = () => {
   };
   const handleLogin = async (e) => { // Funcion cuando se envia el formulario
     e.preventDefault();
+    setLoading(true); // Finaliza la carga tras verificación
     try {
       const user = await authenticateUser(email, password); // Llama a la función de auth.js para autenticar al usuario con las credenciales ingresadas y si lo encuentra, almacena los datos de authentication en user
       if (!user?.uid) {
         console.error("❌ Usuario no autenticado");
+        setLoading(false);
         return;
       }
   
       const userDoc = await getDoc(doc(db, "usuarios", user.uid)); // Almacena los datos del usuario de la base de datos de firestore
       if (!userDoc.exists()) {
         console.error("❌ Usuario no encontrado en Firestore");
+        setLoading(false);
         return;
       }
   
@@ -59,6 +65,7 @@ const Login = () => {
   
     } catch (error) {
       console.error("❌ Error al iniciar sesión:", error);
+      setLoading(false);
     }
   };
   
@@ -83,18 +90,21 @@ const fields = [
   }
 ];
 
+  if (loading) {
+    return <Loading />; // ⬅️ Muestra Loading mientras esté cargando
+  }
   return (
     <div className="login">
      <AuthForm
-  title="Iniciar sesión"
-  buttonText="Iniciar sesión"
-  handleSubmit={handleLogin}
-  fields={fields}
-  handleChange={handleChange}  // Ensure this is passed down properly
-  showSubmitButton={true} // Se mostrará el botón de submit
->
-  <div>No Estás registrado? <Link to={`/register`}>Registrate Aquí</Link></div>
-</AuthForm>
+        title="Iniciar sesión"
+        buttonText="Iniciar sesión"
+        handleSubmit={handleLogin}
+        fields={fields}
+        handleChange={handleChange}  // Ensure this is passed down properly
+        showSubmitButton={true} // Se mostrará el botón de submit
+      >
+      <div>No Estás registrado? <Link to={`/register`}>Registrate Aquí</Link></div>
+      </AuthForm>
     </div>
   );
 };

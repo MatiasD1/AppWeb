@@ -6,6 +6,7 @@ import { getUserName } from "../auth";
 import NavBar from "./navBar";
 import { useCallback } from "react";
 import { InlineWidget } from "react-calendly";
+import Loading from "./Loading";
 
 const SolicitudTurno = () => {
   const [loading, setLoading] = useState(false);
@@ -197,7 +198,7 @@ const SolicitudTurno = () => {
   
 
   return isLoading ? (
-    <p>Cargando...</p>
+    <Loading/>
   ) : (solicitud?.estado==="inactivo"||usuario.estado==="inactivo")?(
     <>
     <NavBar/>

@@ -3,9 +3,11 @@ import React, { useEffect, useState } from "react";
 import { db } from "../firebaseConfig";
 import NavBar from "./navBar";
 import { useLocation } from "react-router-dom";
+import Loading from "./Loading";
 
 const UserDetails = () =>{
     const [user, setUser] = useState(null);  
+    const [loading, setLoading] = useState(true); // nuevo estado
     const location = useLocation();
     const id = location.state?.id;
  
@@ -13,6 +15,7 @@ const UserDetails = () =>{
     
         console.log("ID recibido en UserDetails:", id);
         const fetchUser = async () =>{
+            try{
             const userRef =doc(db,"usuarios", id);
             const userSnap = await getDoc(userRef);
 
@@ -22,15 +25,22 @@ const UserDetails = () =>{
             }else{
                 console.log("No existe el usuario");
             }
+        } catch (error) {
+            console.error("Error al obtener el usuario:", error);
+          } finally {
+            setLoading(false);
+          }
         };
-        if (id){
+        if (id) {
             fetchUser();
-        }
-        
-    }, [id]);
+          } else {
+            setLoading(false); 
+          }
+        }, [id]);
 
     const imageUser =  localStorage.getItem(`uploadedImage_${user?.email}`);
     
+    if (loading) return <Loading/>;
     if (!user) return <p>Cargando usuario...</p>
 
     return (

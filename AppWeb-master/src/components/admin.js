@@ -11,6 +11,7 @@ import {
   Timestamp
 } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
+import Loading from "./Loading";
 
 const Admin = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -171,6 +172,9 @@ const Admin = () => {
       <div>
         <NavBar companyName="Mi Empresa"/>
       </div>
+      {loading ? (
+        <Loading />
+      ) : (
       <div className="table-container">
       <Link to={`/noAceptados`} state={{ usuarios }} className="botonNoAceptados">
           No Aceptados
@@ -295,6 +299,7 @@ const Admin = () => {
         </div>
       )}
       </div>
+    )}
     </>
   );
 };

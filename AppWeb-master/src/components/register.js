@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { registerUser } from "../auth";
 import { setDoc, doc, Timestamp } from "firebase/firestore";
 import AuthForm from "./authForm";
+import Loading from "./Loading";
 
 const Register = () => {
   const [step, setStep] = useState(1);
@@ -150,7 +151,7 @@ const Register = () => {
   return (
     <div className="register">
       {loading ? (
-        <div>Loading...</div> // Muestra un mensaje de carga mientras se registra
+        <Loading/>// Muestra un mensaje de carga mientras se registra
       ) : (
       <AuthForm
         title="Registrar"

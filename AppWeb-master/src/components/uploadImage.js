@@ -1,35 +1,39 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import emailjs from "@emailjs/browser";
 import NavBar from "./navBar";
 import { useLocation } from "react-router-dom";
 import { db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
-import { useRef } from "react";
-
+import Loading from "./Loading"; // importado
 
 const UploadImage = () => {
   const [preview, setPreview] = useState(null);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // estado para mostrar Loading
 
   const location = useLocation();
   const id = location.state.id;
   const fileInputRef = useRef(null);
 
-
   useEffect(() => {
     const fetchUser = async () => {
-      const userRef = doc(db, "usuarios", id);
-      const userSnap = await getDoc(userRef);
-      if (userSnap.exists()) {
-        setUser(userSnap.data());
-      } else {
-        console.log("No existe el usuario");
+      try {
+        const userRef = doc(db, "usuarios", id);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          setUser(userSnap.data());
+        } else {
+          console.log("No existe el usuario");
+        }
+      } catch (error) {
+        console.error("Error al obtener usuario:", error);
+      } finally {
+        setLoading(false); // terminamos la carga
       }
     };
     if (id) fetchUser();
   }, [id]);
 
-  // Cargar imagen del localStorage si ya existe
   useEffect(() => {
     const savedImage = localStorage.getItem(`uploadedImage_${user?.email}`);
     if (savedImage) {
@@ -85,7 +89,6 @@ const UploadImage = () => {
         setPreview(base64String);
         localStorage.setItem(`uploadedImage_${user?.email}`, base64String);
 
-        // Subir a Cloudinary y enviar correo
         const imageUrl = await uploadToCloudinary(base64String);
         await sendEmailToAdmin({
           message: `El usuario ${user?.nombre} ha subido una nueva imagen.`,
@@ -104,18 +107,17 @@ const UploadImage = () => {
 
     if (fileInputRef.current) {
       fileInputRef.current.value = null;
-    }    
+    }
 
     alert("Imagen eliminada.");
 
-    // Notificar al admin
     await sendEmailToAdmin({
       message: `El usuario ${user?.nombre} ha eliminado su imagen.`,
       image_url: null,
     });
   };
 
-  if (!user) return <p>Cargando usuario...</p>;
+  if (loading) return <Loading />;
 
   return (
     <>

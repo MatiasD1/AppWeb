@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { auth } from "../firebaseConfig";
+import Loading from "./Loading";
 
 const User = () => {
   
@@ -27,12 +28,7 @@ const User = () => {
   }, []);
 
   if (loading) {
-    return (
-      <div className="loading-container">
-        <p>Cargando...</p> {/* Aquí puedes poner un spinner o una animación de carga */}
-        <div className="spinner"></div> {/* Este sería tu spinner, pero puedes personalizarlo */}
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

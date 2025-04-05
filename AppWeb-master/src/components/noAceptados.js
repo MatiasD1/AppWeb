@@ -1,63 +1,67 @@
-import React, {  useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { db } from '../firebaseConfig';
 import { doc, deleteDoc, updateDoc, getDocs, collection } from 'firebase/firestore';
 import NavBar from './navBar';
-import { useCallback } from 'react';
+import Loading from './Loading';
 
 const NoAceptados = () => {
+  const [usuarios, setUsuarios] = useState([]);
+  const [loading, setLoading] = useState(true); // nuevo estado para loading
+  const location = useLocation();
 
-    const[usuarios,setUsuarios]=useState([]);
-    const location = useLocation();
-
-    useEffect(() => {
-      if (location.state?.usuarios) {
-          setUsuarios(location.state.usuarios.filter(user => user.aceptado===false));
-      } else {
-          const fetchUsuarios = async () => {
-              try {
-                  const querySnapshot = await getDocs(collection(db, 'usuarios'));
-                  const userList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                  setUsuarios(userList.filter(user => !user.aceptado));
-              } catch (error) {
-                  console.error('Error al obtener usuarios:', error);
-              }
-          };
-          fetchUsuarios();
-      }
-  }, [location.state]);
-    
-    const RechazarUsuario = useCallback(async (id)=>{
-        try {
-            if (window.confirm("Estás seguro que deseas rechazar a este usuario?")) {
-              const userRef = doc(db, "usuarios", id);
-              await deleteDoc(userRef);
-              setUsuarios(usuarios.filter(user => user.id !== id));
-            }
-          } catch (error) {
-            console.error("Error dando de baja al usuario: ", error);
-          }
-    },[usuarios]);
-
-    const AceptarUsuario = useCallback(async (id) =>{
-      try{
-        if (window.confirm("Estas seguro de aceptar a este usuario?")){
-          const userRef = doc(db,"usuarios",id);
-          await updateDoc(userRef, { aceptado: true });
-          setUsuarios(usuarios.filter(user => user.id !== id));
-          console.log("Usuario aceptado");
+  useEffect(() => {
+    const fetchUsuarios = async () => {
+      try {
+        if (location.state?.usuarios) {
+          setUsuarios(location.state.usuarios.filter(user => user.aceptado === false));
+        } else {
+          const querySnapshot = await getDocs(collection(db, 'usuarios'));
+          const userList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setUsuarios(userList.filter(user => !user.aceptado));
         }
-      }catch(error){
-        console.error("Error al aceptar al usuario");
+      } catch (error) {
+        console.error('Error al obtener usuarios:', error);
+      } finally {
+        setLoading(false); // se termina la carga
       }
-    },[usuarios]);
+    };
+    fetchUsuarios();
+  }, [location.state]);
 
-    return (
-        <>
-        <NavBar/>
-        <div className='table-container'>
-          <h2>Pendientes de Aceptación</h2>
-          {usuarios.length > 0 ? (
+  const RechazarUsuario = useCallback(async (id) => {
+    try {
+      if (window.confirm("¿Estás seguro que deseas rechazar a este usuario?")) {
+        const userRef = doc(db, "usuarios", id);
+        await deleteDoc(userRef);
+        setUsuarios(prev => prev.filter(user => user.id !== id));
+      }
+    } catch (error) {
+      console.error("Error dando de baja al usuario: ", error);
+    }
+  }, []);
+
+  const AceptarUsuario = useCallback(async (id) => {
+    try {
+      if (window.confirm("¿Estás seguro de aceptar a este usuario?")) {
+        const userRef = doc(db, "usuarios", id);
+        await updateDoc(userRef, { aceptado: true });
+        setUsuarios(prev => prev.filter(user => user.id !== id));
+        console.log("Usuario aceptado");
+      }
+    } catch (error) {
+      console.error("Error al aceptar al usuario");
+    }
+  }, []);
+
+  return (
+    <>
+      <NavBar />
+      <div className='table-container'>
+        <h2>Pendientes de Aceptación</h2>
+        {loading ? (
+          <Loading/> 
+        ) : usuarios.length > 0 ? (
           <table>
             <thead>
               <tr>
@@ -69,25 +73,27 @@ const NoAceptados = () => {
               </tr>
             </thead>
             <tbody>
-              {
-                usuarios.map((usuario) => (
-                  <tr key={usuario.id}>
-                    <td>{usuario.nombre}{usuario.apellido}</td>
-                    <td>{usuario.email}</td>
-                    <td>{usuario.localidad}</td>
-                    <td><button className='button-user one' onClick={()=>AceptarUsuario(usuario.id)} >Aceptar</button></td>
-                    <td><button className='button-user two' onClick={() => RechazarUsuario(usuario.id)}>Rechazar</button></td>
-                  </tr>            
-                ))
-              } 
+              {usuarios.map((usuario) => (
+                <tr key={usuario.id}>
+                  <td>{usuario.nombre}{usuario.apellido}</td>
+                  <td>{usuario.email}</td>
+                  <td>{usuario.localidad}</td>
+                  <td>
+                    <button className='button-user one' onClick={() => AceptarUsuario(usuario.id)}>Aceptar</button>
+                  </td>
+                  <td>
+                    <button className='button-user two' onClick={() => RechazarUsuario(usuario.id)}>Rechazar</button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
-          ):(
-            <p>No hay usuarios pendientes de aceptación.</p>
-          )}
-        </div>
-      </>
-    )
+        ) : (
+          <p>No hay usuarios pendientes de aceptación.</p>
+        )}
+      </div>
+    </>
+  );
 };
 
 export default NoAceptados;
