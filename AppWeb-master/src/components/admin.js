@@ -245,7 +245,7 @@ const Admin = () => {
                   <td>{usuario.nombre} {usuario.apellido}</td>
                   <td>{usuario.email}</td>
                   <td>{usuario.localidad}</td>
-                  <td>{usuario.estado}</td>
+                  <td>{usuario.role==="user"? usuario.estado:"Es admin"}</td>
                   <td>
                     <input
                       type="date"
