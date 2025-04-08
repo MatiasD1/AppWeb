@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import {  db } from "../firebaseConfig";
 import NavBar from "./navBar";
 import {
+  onSnapshot,
   getDocs,
   collection,
   deleteDoc,
@@ -17,8 +18,6 @@ const Admin = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedImage,setSelectedImage] = useState(null);
-  const [editandoId, setEditandoId] = useState(null);
-  const [fechas, setFechas] = useState({});
   const [filtros, setFiltros] = useState({
     localidad: '',
     estado: '',
@@ -39,23 +38,54 @@ const Admin = () => {
 
   
 
-  const obtenerUsuarios = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, "usuarios"));
-      const usuariosData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+  useEffect(() => {
+    const unsubUsuarios = onSnapshot(collection(db, "usuarios"), async (usuariosSnapshot) => {
+      const solicitudesSnapshot = await getDocs(collection(db, "solicitudes"));
+      const hoy = new Date();
+  
+      const usuariosData = await Promise.all(
+        usuariosSnapshot.docs.map(async (usuarioDoc) => {
+          const data = usuarioDoc.data();
+          const solicitudDoc = solicitudesSnapshot.docs.find((s) => s.id === usuarioDoc.id);
+  
+          const fechaInicio = data.fechaDeInicio?.toDate?.();
+          const fechaVencimiento = data.fechaDeVencimiento?.toDate?.();
+          let estado = "";
+  
+          if (solicitudDoc) {
+            if (fechaInicio && fechaVencimiento && hoy >= fechaInicio && hoy <= fechaVencimiento) {
+              estado = "activo";
+            } else if (fechaVencimiento && hoy > fechaVencimiento) {
+              // ❌ Solicitud vencida: eliminarla y resetear fechas
+              await deleteDoc(doc(db, "solicitudes", usuarioDoc.id));
+              await updateDoc(usuarioDoc.ref, {
+                fechaDeInicio: null,
+                fechaDeVencimiento: null,
+              });
+              estado = "inactivo";
+            } else {
+              estado = "pendiente";
+            }
+          } else {
+            estado = "inactivo";
+          }
+  
+          return {
+            id: usuarioDoc.id,
+            ...data,
+            estado,
+          };
+        })
+      );
+  
       setUsuarios(usuariosData);
       setLoading(false);
-    } catch (error) {
-      console.error("Error obteniendo usuarios: ", error);
-    }
-  };
-
-  useEffect(() => {
-    obtenerUsuarios();
+    });
+  
+    return () => unsubUsuarios(); // Limpieza al desmontar
   }, []);
+  
+  
 
   const ManejarBaja = async (id) => {
     try {
@@ -92,18 +122,6 @@ const Admin = () => {
     }
   }
 
-  
-  const handleChange = (id, campo, valor) => {
-    setFechas((prev) => ({
-      ...prev,
-      [id]: {
-        ...prev[id],
-        [campo]: valor === "" ? null : valor, // Guarda null si el input está vacío
-      },
-    }));
-  };
-  
-  
   const ajustarFechaBuenosAires = (fechaStr) => {
     const fecha = new Date(fechaStr);
     fecha.setUTCHours(3, 0, 0, 0); // Ajustar a medianoche en Buenos Aires (UTC-3)
@@ -111,68 +129,34 @@ const Admin = () => {
   };
 
   
-  const handleEdit = async (id) => {
-    if (editandoId === id) {
-      try {
-        // Obtenemos las nuevas fechas, si no existen tomamos las anteriores
-        const nuevasFechas = fechas[id] || {};
-        
-        const usuarioActual = usuarios.find((user) => user.id === id);
-
-        const fechaDeInicio = nuevasFechas.fechaDeInicio
-          ? ajustarFechaBuenosAires(nuevasFechas.fechaDeInicio)
-          : usuarioActual.fechaDeInicio
-          ? usuarioActual.fechaDeInicio.toDate()
-          : null;
-
-        const fechaDeVencimiento = nuevasFechas.fechaDeVencimiento
-          ? ajustarFechaBuenosAires(nuevasFechas.fechaDeVencimiento)
-          : usuarioActual.fechaDeVencimiento
-          ? usuarioActual.fechaDeVencimiento.toDate()
-          : null;
-
+  const handleChange = async (id, campo, valor) => {
+    const fechaAjustada = valor === "" ? null : Timestamp.fromDate(ajustarFechaBuenosAires(valor));
   
-          const cambios = {};
-          if (nuevasFechas.fechaDeInicio !== undefined) {
-            cambios.fechaDeInicio = nuevasFechas.fechaDeInicio
-              ? Timestamp.fromDate(fechaDeInicio)
-              : null; // Permitir valores nulos
-          }
-          if (nuevasFechas.fechaDeVencimiento !== undefined) {
-            cambios.fechaDeVencimiento = nuevasFechas.fechaDeVencimiento
-              ? Timestamp.fromDate(fechaDeVencimiento)
-              : null; // Permitir valores nulos
-          }
-  
-        if (Object.keys(cambios).length > 0) {
-          const userRef = doc(db, "usuarios", id);
-          await updateDoc(userRef, cambios);
-  
-          // Actualizamos el estado local de los usuarios con las fechas convertidas a Timestamp
-          setUsuarios((prev) =>
-            prev.map((user) =>
-              user.id === id
-                ? {
-                    ...user,
-                    ...cambios,
-                  }
-                : user
-            )
-          );
-        }
-        
-        setEditandoId(null); // Desactivamos el modo de edición
-      } catch (error) {
-        console.error("Error guardando fechas:", error);
-      }
-    } else {
-      setEditandoId(id); // Si no estamos editando, activamos el modo de edición
+    try {
+      const userRef = doc(db, "usuarios", id);
+      await updateDoc(userRef,{
+          [campo]:fechaAjustada
+        })
+      
+      setUsuarios((prevUsuarios) =>
+        prevUsuarios.map((usuario) =>
+          usuario.id === id
+            ? {
+                ...usuario,
+                [campo]: fechaAjustada,
+                ...(fechaAjustada ? { estado: "activo" } : {})  // Esto solo agrega estado si hay fecha
+              }
+            : usuario
+        )
+      );
+      
+      alert("Fecha Actualizada");
+    } catch (error) {
+      console.error("Error actualizando fecha:", error);
     }
   };
   
   
-  
-    
 
   return (
     <>
@@ -182,65 +166,38 @@ const Admin = () => {
       {loading ? (
         <Loading />
       ) : (
-      <div className="table-container">
-      <Link to={`/noAceptados`} state={{ usuarios }} className="botonNoAceptados">
-          No Aceptados
-        </Link>
-        <h2>Lista de administradores</h2>
-            {usuarios.length > 0 ? (
-                <table border="1">
-                    <thead>
-                        <tr>
-                            <th>Rol</th>
-                            <th>Nombre</th>
-                            <th>Apellido</th>
-                            <th>Email</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {usuarios
-                        .filter(usuario => usuario.role==="admin")
-                        .map((admin) => (
-                            <tr key={admin.id}>
-                                <td><button className="button-user one"  onClick={()=>CambioDeRol(admin.id)} disabled={admin.nombre==="Martin"}>{admin.role}</button></td>
-                                <td>{admin.nombre}</td>
-                                <td>{admin.apellido}</td>
-                                <td>{admin.email}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            ) : (
-                <p>No hay administradores registrados.</p>
-            )}
-        <br/>    
-        <h2>Lista de Usuarios Registrados</h2>
-        <div className="filtros">
-  <label>
-    Localidad:
-    <input
-      type="text"
-      value={filtros.localidad}
-      onChange={(e) => setFiltros({ ...filtros, localidad: e.target.value })}
-    />
-  </label>
-  <label>
-    Estado:
-    <input
-      type="text"
-      value={filtros.estado}
-      onChange={(e) => setFiltros({ ...filtros, estado: e.target.value })}
-    />
-  </label>
-  <label>
-    Nombre:
-    <input
-      type="text"
-      value={filtros.nombre}
-      onChange={(e) => setFiltros({ ...filtros, nombre: e.target.value })}
-    />
-  </label>
-</div>
+        <div className="table-container">
+          <Link to={`/noAceptados`} state={{ usuarios }} className="botonNoAceptados">
+              No Aceptados
+          </Link>
+          <br/>    
+          <h2>Lista de Usuarios Registrados</h2>
+          <div className="filtros">
+          <label>
+            Localidad:
+            <input
+              type="text"
+              value={filtros.localidad}
+              onChange={(e) => setFiltros({ ...filtros, localidad: e.target.value })}
+            />
+          </label>
+          <label>
+            Estado:
+            <input
+              type="text"
+              value={filtros.estado}
+              onChange={(e) => setFiltros({ ...filtros, estado: e.target.value })}
+            />
+          </label>
+          <label>
+            Nombre:
+            <input
+              type="text"
+              value={filtros.nombre}
+              onChange={(e) => setFiltros({ ...filtros, nombre: e.target.value })}
+            />
+          </label>
+        </div>
 
         <table>
           <thead>
@@ -252,23 +209,16 @@ const Admin = () => {
               <th>Estado</th>
               <th>Fecha de Inicio</th>
               <th>Fecha de Vencimiento</th>
-              <th>Finalizado</th>
               <th>Imagen</th>
+              <th>Detalles</th>
               <th></th>
-              <th>Ver Detalles</th>
-              <th>Editar</th>
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="10">Cargando usuarios...</td>
-              </tr>
-            ) : (
+            {
               usuarios
               .filter(usuario =>
                 usuario.aceptado === true &&
-                usuario.role === "user" &&
                 (filtros.localidad === '' || usuario.localidad?.toLowerCase().includes(filtros.localidad.toLowerCase())) &&
                 (filtros.estado === '' || usuario.estado?.toLowerCase().includes(filtros.estado.toLowerCase())) &&
                 (filtros.nombre === '' || `${usuario.nombre} ${usuario.apellido}`.toLowerCase().includes(filtros.nombre.toLowerCase()))
@@ -285,48 +235,52 @@ const Admin = () => {
                     <input
                       type="date"
                       name="fechaDeInicio"
-                      value={fechas[usuario.id]?.fechaDeInicio ||
-                        (usuario.fechaDeInicio ? usuario.fechaDeInicio.toDate().toISOString().split("T")[0] : "")}
+                      value={
+                        usuario.fechaDeInicio
+                          ? usuario.fechaDeInicio.toDate().toISOString().split("T")[0]
+                          : ""
+                      }
                       onChange={(e) => handleChange(usuario.id, "fechaDeInicio", e.target.value)}
-                      disabled={!usuario.fechaDeInicio || editandoId !== usuario.id}
-                      
                     />
                   </td>
+
                   <td>
                     <input
                       type="date"
                       name="fechaDeVencimiento"
-                      value={fechas[usuario.id]?.fechaDeVencimiento ||
-                        (usuario.fechaDeVencimiento ? usuario.fechaDeVencimiento.toDate().toISOString().split("T")[0] : "")}
-                      onChange={(e) => handleChange(usuario.id, "fechaDeVencimiento", e.target.value)}
-                      disabled={!usuario.fechaDeVencimiento || editandoId !== usuario.id}
-                     
+                      value={
+                        usuario.fechaDeVencimiento
+                          ? usuario.fechaDeVencimiento.toDate().toISOString().split("T")[0]
+                          : ""
+                      }
+                      onChange={(e) =>
+                        handleChange(usuario.id, "fechaDeVencimiento", e.target.value)
+                      }
                     />
                   </td>
 
-                  <td>{usuario.finalizado?"Si":"No"}</td>
-
-                  <td >{localStorage.getItem(`uploadedImage_${usuario?.email}`) && (
-                    <button className="button-user one" onClick={()=>handelImageClick(localStorage.getItem(`uploadedImage_${usuario?.email}`))}>
-                      Ver Imagen
-                  </button>)}</td>
+                  <td>{localStorage.getItem(`uploadedImage_${usuario?.email}`)?(
+                      <button 
+                        className="button-user one" 
+                        onClick={()=>handelImageClick(localStorage.getItem(`uploadedImage_${usuario?.email}`))} 
+                      >
+                        Ver Imagen
+                      </button>):(
+                        <p>No hay imagen</p>
+                      )
+                    }
+                  </td>
+                  <td>
+                    <button className="button-user one" disabled={usuario.role==="admin"} onClick={()=>navigate("/userDetails",{state:{id:usuario.id}})}>Ver más</button>
+                  </td>
                   <td>
                     <button className="botonBajaUsuario" onClick={() => ManejarBaja(usuario.id)}>
                       Dar de baja
                     </button>
                   </td>
-                  <td>
-                    <button className="button-user one" onClick={()=>navigate("/userDetails",{state:{id:usuario.id}})}>Detalles</button>
-                  </td>
-                  <td>
-                    <button className="botonBajaUsuario" onClick={() => handleEdit(usuario.id)}>
-                      {editandoId === usuario.id ? "Guardar" : "Editar"}
-                    </button>
-                  </td>
-
                 </tr>
               ))
-            )}
+            }  
           </tbody>
         </table>
         
