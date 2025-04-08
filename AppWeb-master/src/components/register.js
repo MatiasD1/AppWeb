@@ -16,7 +16,6 @@ const Register = () => {
     fechaDeInicio: Timestamp.fromDate(new Date()),
     fechaDeVencimiento: Timestamp.fromDate(new Date()),
     estado: "inactivo",
-    finalizado: true,
     localidad: "",
     marcaAuto: "",
     modeloAuto: "",
