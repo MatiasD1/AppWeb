@@ -32,6 +32,30 @@ const Register = () => {
   const [passwordError, setPasswordError] = useState("");
   const [touchedFields, setTouchedFields] = useState({});
   const [loading, setLoading] = useState(false);
+  const partidosBuenosAires = [
+    "Adolfo Alsina", "Adolfo Gonzales Chaves", "Alberti", "Almirante Brown", "Arrecifes", "Avellaneda",
+    "Ayacucho", "Azul", "Bahía Blanca", "Balcarce", "Baradero", "Benito Juárez", "Berazategui",
+    "Berisso", "Bolívar", "Bragado", "Brandsen", "Campana", "Cañuelas", "Capitán Sarmiento",
+    "Carlos Casares", "Carlos Tejedor", "Carmen de Areco", "Castelli", "Chacabuco", "Chascomús",
+    "Chivilcoy", "Colón", "Coronel Dorrego", "Coronel Pringles", "Coronel Rosales", "Coronel Suárez",
+    "Daireaux", "Dolores", "Ensenada", "Escobar", "Esteban Echeverría", "Exaltación de la Cruz",
+    "Ezeiza", "Florencio Varela", "Florentino Ameghino", "General Alvarado", "General Alvear",
+    "General Arenales", "General Belgrano", "General Guido", "General Juan Madariaga",
+    "General La Madrid", "General Las Heras", "General Lavalle", "General Paz", "General Pinto",
+    "General Pueyrredón", "General Rodríguez", "General San Martín", "General Viamonte",
+    "General Villegas", "Guaminí", "Hipólito Yrigoyen", "Hurlingham", "Ituzaingó", "José C. Paz",
+    "Junín", "La Costa", "La Matanza", "Lanús", "La Plata", "Laprida", "Las Flores", "Leandro N. Alem",
+    "Lincoln", "Lobería", "Lobos", "Lomas de Zamora", "Luján", "Magdalena", "Maipú", "Malvinas Argentinas",
+    "Mar Chiquita", "Marcos Paz", "Mercedes", "Merlo", "Monte", "Monte Hermoso", "Moreno", "Morón",
+    "Navarro", "Necochea", "Olavarría", "Patagones", "Pehuajó", "Pellegrini", "Pergamino",
+    "Pila", "Pilar", "Pinamar", "Presidente Perón", "Puán", "Punta Indio", "Quilmes", "Ramallo",
+    "Rauch", "Rivadavia", "Rojas", "Roque Pérez", "Saavedra", "Saladillo", "Salliqueló", "Salto",
+    "San Andrés de Giles", "San Antonio de Areco", "San Cayetano", "San Fernando", "San Isidro",
+    "San Miguel", "San Nicolás", "San Pedro", "San Vicente", "Suipacha", "Tandil", "Tapalqué",
+    "Tigre", "Tordillo", "Tornquist", "Trenque Lauquen", "Tres Arroyos", "Tres de Febrero",
+    "Tres Lomas", "Vicente López", "Villa Gesell", "Villarino", "Zárate"
+  ];
+  
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -48,7 +72,17 @@ const Register = () => {
     });
   };
   
-
+  const validateStepFields = () => {
+    const fieldsToCheck = renderFields();
+    for (let field of fieldsToCheck) {
+      if (!formData[field.name] || (field.type === "select" && formData[field.name] === "")) {
+        alert(`Debe completar todos los campos para continuar`);
+        return false;
+      }
+    }
+    return true;
+  };
+  
   const validatePassword = () => {
     const { password, confirmPassword } = formData;
     if (password.length < 6) {
@@ -103,6 +137,11 @@ const Register = () => {
   };
 
   const nextStep = () => {
+
+    if (!validateStepFields()) {
+      return;
+    }
+
     if (step === 4 && !validatePassword()) {
       return;
     }
@@ -127,7 +166,7 @@ const Register = () => {
           { name: "apellido", label: "Apellido", value: formData.apellido },
           { name: "email", label: "Correo electrónico", type: "email", value: formData.email },
           { name: "telefono", label: "Teléfono", value: formData.telefono },
-          { name: "localidad", label: "Localidad", value: formData.localidad },
+          { name: "localidad", label: "Localidad", type: "select", options: partidosBuenosAires, value: formData.localidad },
         ];
       case 2:
         return [

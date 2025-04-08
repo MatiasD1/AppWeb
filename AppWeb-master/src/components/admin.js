@@ -19,6 +19,13 @@ const Admin = () => {
   const [selectedImage,setSelectedImage] = useState(null);
   const [editandoId, setEditandoId] = useState(null);
   const [fechas, setFechas] = useState({});
+  const [filtros, setFiltros] = useState({
+    localidad: '',
+    estado: '',
+    nombre: '',
+    rol: '',
+  });
+  
   const navigate = useNavigate();
 
 
@@ -208,6 +215,33 @@ const Admin = () => {
             )}
         <br/>    
         <h2>Lista de Usuarios Registrados</h2>
+        <div className="filtros">
+  <label>
+    Localidad:
+    <input
+      type="text"
+      value={filtros.localidad}
+      onChange={(e) => setFiltros({ ...filtros, localidad: e.target.value })}
+    />
+  </label>
+  <label>
+    Estado:
+    <input
+      type="text"
+      value={filtros.estado}
+      onChange={(e) => setFiltros({ ...filtros, estado: e.target.value })}
+    />
+  </label>
+  <label>
+    Nombre:
+    <input
+      type="text"
+      value={filtros.nombre}
+      onChange={(e) => setFiltros({ ...filtros, nombre: e.target.value })}
+    />
+  </label>
+</div>
+
         <table>
           <thead>
             <tr>
@@ -232,7 +266,13 @@ const Admin = () => {
               </tr>
             ) : (
               usuarios
-              .filter(usuario => usuario.aceptado === true && usuario.role==="user") 
+              .filter(usuario =>
+                usuario.aceptado === true &&
+                usuario.role === "user" &&
+                (filtros.localidad === '' || usuario.localidad?.toLowerCase().includes(filtros.localidad.toLowerCase())) &&
+                (filtros.estado === '' || usuario.estado?.toLowerCase().includes(filtros.estado.toLowerCase())) &&
+                (filtros.nombre === '' || `${usuario.nombre} ${usuario.apellido}`.toLowerCase().includes(filtros.nombre.toLowerCase()))
+              )
               .map((usuario) => (
                 <tr key={usuario.id}>
                   

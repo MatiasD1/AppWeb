@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "../img/wolfLogo.png"
+import logo from "../img/wolfLogoPNG.png"
 const Loading = () => {
   return (
     <div className="loading-container">

@@ -1,22 +1,13 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap";
 import Carrusel1 from "../img/Carrusel1.jpg";
 import Carrusel2 from "../img/Carrusel2.jpg";
 import Carrusel3 from "../img/Carrusel3.jpg";
 
 const Carrusel = () => {
-  useEffect(() => {
-    const bootstrap = require("bootstrap");
-    new bootstrap.Carousel("#carouselExampleAutoplaying", {
-      interval: 4000,
-      ride: "carousel",
-    });
-  }, []);
-
   return (
     <div className="carrusel">
-      <div id="carouselExampleAutoplaying" className="carousel slide">
+      <div id="carouselExampleAutoplaying" className="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
         <div className="carousel-inner">
           <div className="carousel-item active">
             <img src={Carrusel1} className="d-block w-100 img-carrusel" alt="Foto del exterior" />

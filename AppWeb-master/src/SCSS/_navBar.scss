@@ -54,32 +54,60 @@ $user-name-color: #e53e3e; // Color rojo para el nombre del usuario
   }
 }
 
-// Evita que el contenido quede tapado por el navbar
-body {
-  padding-top: 60px;
-}
 
 // Media queries para responsividad
+@media (max-width: 1024px) {
+  .navbar {
+    height: auto;
+    flex-direction: row;
+    padding: 0.5rem 1rem;
+
+    .logo {
+      height: 35px;
+    }
+
+    .nav-right {
+      .user-name {
+        font-size: 0.9rem;
+        margin-right: 0.5rem;
+      }
+
+      .logout-btn {
+        font-size: 0.9rem;
+        padding: 0.3rem 0.6rem;
+      }
+    }
+  }
+}
+
 @media (max-width: 767px) {
   .navbar {
-    height: 50px; // Reduce el tamaño en móviles si es necesario
-    padding: 0 0.5rem;
-  }
-  
-  .logo {
-    height: 35px; 
-  }
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    padding: 0.5rem 1rem;
+    gap: 0.5rem;
 
-  .nav-right {
-    margin-right: 0.5rem;
-    
-    .user-name {
-      font-size: 0.9rem;
+    .logo {
+      height: 30px;
+      margin-left: 0;
     }
-    
-    .logout-btn {
-      font-size: 0.9rem;
-      padding: 0.2rem 0.5rem;
+
+    .nav-right {
+      width: 100%;
+      justify-content: space-around;
+      margin: 0;
+      gap: 30%;
+
+      .user-name {
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+      }
+
+      .logout-btn {
+        font-size: 0.85rem;
+        padding: 0.3rem 0.6rem;
+      }
     }
   }
 }
