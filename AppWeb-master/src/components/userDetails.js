@@ -5,6 +5,7 @@ import NavBar from "./navBar";
 import { useLocation } from "react-router-dom";
 import Loading from "./Loading";
 import { Timestamp } from "firebase/firestore";
+import Swal from "sweetalert2";
 
 const UserDetails = () =>{
     const [user, setUser] = useState(null);  
@@ -47,13 +48,27 @@ const UserDetails = () =>{
 
     const HandleChange = async (fecha) => {
         try {
+          const confirmed = await Swal.fire({
+                title: "Guardar Turno?",
+                text: "Esta acción no se puede deshacer.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, guardar",
+                cancelButtonText: "Cancelar",
+          });
+          if (!confirmed.isConfirmed) return;
+          Swal.fire({
+            title: "Guardando turno...",
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading(),
+          });
           const solicitudRef = doc(db, "solicitudes", id);
           await updateDoc(solicitudRef, {
             estado: "solicitud contestada",
             turno: Timestamp.fromDate(fecha),
             reserva:null
           });
-          alert("Turno cargado");
+          Swal.fire("Turno guardado", "", "success");
         } catch (error) {
           console.error("Error al guardar el turno", error);
         }
@@ -89,7 +104,7 @@ const UserDetails = () =>{
                 }
                 {!solicitud?(
                   <p>El usuario {user.nombre} {user.apellido} no realizó una solicitud</p>
-                ):solicitud && !solicitud.reserva? (
+                ):!solicitud.turno? (
                     <div>   
                       <label>Turno para {user.nombre} {user.apellido}</label>
                       <input 
@@ -115,6 +130,14 @@ const UserDetails = () =>{
                         Guardar turno
                       </button>
                     </div>                  
+                ):!solicitud.reserva?(
+                  <p>El usuario {user.nombre} {user.apellido} debe de aceptar o rechazar el turno del día {solicitud.turno.toDate().toLocaleString("es-AR", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit"
+                        })}.</p>
                 ):(
                     <p>
                         El usuario {user.nombre} {user.apellido} tiene turno para{" "}

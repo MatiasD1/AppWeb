@@ -11,30 +11,30 @@ const AuthForm = ({ title, buttonText, handleSubmit, fields = [], termsAccepted,
             <div key={index} className="inputContainer">
               <label htmlFor={field.name}>{field.label}</label>
               {field.type === "select" ? (
-  <select
-    id={field.name}
-    name={field.name}
-    value={field.value}
-    onChange={handleChange}
-    required
-  >
-    <option value="">Seleccionar...</option>
-    {field.options?.map((option, idx) => (
-      <option key={idx} value={option}>
-        {option}
-      </option>
-    ))}
-  </select>
-) : (
-  <input
-    id={field.name}
-    name={field.name}
-    type={field.type || "text"}
-    value={field.value}
-    onChange={handleChange}
-    required
-  />
-)}
+                <select
+                  id={field.name}
+                  name={field.name}
+                  value={field.value}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Seleccionar...</option>
+                  {field.options?.map((option, idx) => (
+                    <option key={idx} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  id={field.name}
+                  name={field.name}
+                  type={field.type || "text"}
+                  value={field.value}
+                  onChange={handleChange}
+                  required
+                />
+              )}
 
             </div>
           ))}

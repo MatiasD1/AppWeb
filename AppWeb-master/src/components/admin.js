@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 import Loading from "./Loading";
+import Swal from "sweetalert2";
 
 const Admin = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -64,19 +65,51 @@ const Admin = () => {
   
 
   const ManejarBaja = async (id) => {
+    
+    const confirmed = await Swal.fire({
+          title: "¿Eliminar usuario?",
+          text: "Esta acción no se puede deshacer.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Sí, eliminar",
+          cancelButtonText: "Cancelar",
+        });
+    if (!confirmed.isConfirmed) return;
+    Swal.fire({
+          title: "Eliminando usuario...",
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading(),
+        });
+
     try {
-      if (window.confirm("¿Estás seguro que deseas eliminar este usuario?")) {
         await deleteDoc(doc(db, "usuarios", id));
         setUsuarios(usuarios.filter((user) => user.id !== id));
-      }
+        Swal.fire("Usuario eliminada", "", "success");
     } catch (error) {
       console.error("Error eliminando usuario: ", error);
+      Swal.fire("Error", "No se pudo eliminar al usuario", "error");
     }
   };
 
 
   
   const CambioDeRol = async (id)=>{
+    
+    const confirmed = await Swal.fire({
+      title: "Cambiar rol del usuario?",
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, cambiar",
+      cancelButtonText: "Cancelar",
+    });
+    if (!confirmed.isConfirmed) return;
+    Swal.fire({
+      title: "Cambiando rol del usuario...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+    
     try {
       const userRef = doc(db, "usuarios", id);
       const userSnap = await getDoc(userRef);
@@ -88,13 +121,14 @@ const Admin = () => {
       
       const nuevoRol = userSnap.data().role === "user" ? "admin" : "user";
       await updateDoc(userRef, { role: nuevoRol });
-
+      Swal.fire("Rol cambiado", "", "success");
       setUsuarios((prev) =>
         prev.map((user) => (user.id === id ? { ...user, role: nuevoRol } : user))
       );
       
     } catch (error) {
       console.error("Error al cambiar de rol", error);
+      Swal.fire("Error", "No se pudo cambiar el rol", "error");
     }
   }
 
@@ -108,7 +142,15 @@ const Admin = () => {
   const handleChange = async (id, campo, valor) => {
     const fechaAjustada = valor === "" ? null : Timestamp.fromDate(ajustarFechaBuenosAires(valor));
     const hoy = new Date();
-  
+    const confirmed = await Swal.fire({
+          title: "¿Eliminar imagen?",
+          text: "Esta acción no se puede deshacer.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Sí, eliminar",
+          cancelButtonText: "Cancelar",
+        });
+    if (!confirmed.isConfirmed)return;
     try {
       const userRef = doc(db, "usuarios", id);
       await updateDoc(userRef, {
@@ -164,10 +206,10 @@ const Admin = () => {
             : user
         )
       );
-  
-      alert("Fecha y estado actualizados correctamente");
+      Swal.fire("Fecha y estado actualizados correctamente","","success");
     } catch (error) {
       console.error("Error al actualizar:", error);
+      Swal.fire("Error", "No se pudo actualizar las fechas", "error");
     }
   };
   
@@ -188,31 +230,34 @@ const Admin = () => {
           <br/>    
           <h2>Lista de Usuarios Registrados</h2>
           <div className="filtros">
-          <label>
-            Localidad:
-            <input
-              type="text"
-              value={filtros.localidad}
-              onChange={(e) => setFiltros({ ...filtros, localidad: e.target.value })}
-            />
-          </label>
-          <label>
-            Estado:
-            <input
-              type="text"
-              value={filtros.estado}
-              onChange={(e) => setFiltros({ ...filtros, estado: e.target.value })}
-            />
-          </label>
-          <label>
-            Nombre:
-            <input
-              type="text"
-              value={filtros.nombre}
-              onChange={(e) => setFiltros({ ...filtros, nombre: e.target.value })}
-            />
-          </label>
-        </div>
+            <h4>Filtrar</h4>
+            <div className="labelsFiltros">
+              <label>
+                <input
+                  type="text"
+                  placeholder="Localidad"
+                  value={filtros.localidad}
+                  onChange={(e) => setFiltros({ ...filtros, localidad: e.target.value })}
+                />
+              </label>
+              <label>
+                <input
+                  type="text"
+                  placeholder="Estado"
+                  value={filtros.estado}
+                  onChange={(e) => setFiltros({ ...filtros, estado: e.target.value })}
+                />
+              </label>
+              <label>
+                <input
+                  type="text"
+                  placeholder="Nombre"
+                  value={filtros.nombre}
+                  onChange={(e) => setFiltros({ ...filtros, nombre: e.target.value })}
+                />
+              </label>
+            </div>
+          </div>
 
         <table>
           <thead>
@@ -241,7 +286,7 @@ const Admin = () => {
               .map((usuario) => (
                 <tr key={usuario.id}>
                   
-                  <td><button className="button-user one"  onClick={()=>CambioDeRol(usuario.id)}>{usuario.role}</button></td>
+                  <td><button className="buttonAdmin"  onClick={()=>CambioDeRol(usuario.id)}>{usuario.role}</button></td>
                   <td>{usuario.nombre} {usuario.apellido}</td>
                   <td>{usuario.email}</td>
                   <td>{usuario.localidad}</td>
@@ -276,7 +321,7 @@ const Admin = () => {
 
                   <td>{localStorage.getItem(`uploadedImage_${usuario?.email}`)?(
                       <button 
-                        className="button-user one" 
+                        className="buttonAdmin" 
                         onClick={()=>handelImageClick(localStorage.getItem(`uploadedImage_${usuario?.email}`))} 
                       >
                         Ver Imagen
@@ -286,7 +331,7 @@ const Admin = () => {
                     }
                   </td>
                   <td>
-                    <button className="button-user one" disabled={usuario.role==="admin"} onClick={()=>navigate("/userDetails",{state:{id:usuario.id}})}>Ver más</button>
+                    <button className="buttonAdmin" disabled={usuario.role==="admin"} onClick={()=>navigate("/userDetails",{state:{id:usuario.id}})}>Ver más</button>
                   </td>
                   <td>
                     <button className="botonBajaUsuario" onClick={() => ManejarBaja(usuario.id)}>

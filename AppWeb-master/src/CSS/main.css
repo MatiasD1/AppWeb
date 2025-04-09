@@ -154,7 +154,7 @@ input:focus {
   display: flex;
   align-items: center;
   margin-left: auto;
-  margin-right: 1rem;
+  margin-right: 2rem;
 }
 .navbar .nav-right .user-name {
   color: #e53e3e;
@@ -170,7 +170,7 @@ input:focus {
   color: white;
   font-size: 1rem;
   padding: 0.3rem 0.7rem;
-  transition: background-color 0.2s ease-in-out;
+  transition: background-color 0.1s ease-in-out;
   border: none;
   background-color: black;
 }
@@ -310,36 +310,45 @@ input:focus {
   transform: translateX(-50%);
   display: flex;
   gap: 3rem;
-  width: 50%; /* Esto asegura que los botones ocupen el 50% del ancho del contenedor */
+  width: 50%;
 }
 
 .button-user {
-  flex: 1; /* Hace que los botones se estiren y tengan el mismo tamaño */
+  flex: 1;
   padding: 0.75rem 1.5rem;
-  border-radius: 0.375rem;
-  color: white;
+  border-radius: 0.5rem;
   font-size: 1.2rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-  background-color: rgba(0, 0, 0, 0.6);
   border: none;
+  color: white;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s;
   display: flex;
   justify-content: center;
   align-items: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+.button-user:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
+}
+.button-user:active {
+  transform: scale(0.97);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
 .button-user.one {
-  background-color: #020202;
+  background: linear-gradient(135deg, #1a1a1a, #333333);
 }
 .button-user.one:hover {
-  background-color: #242424;
+  background: linear-gradient(135deg, #2a2a2a, #444444);
 }
 
 .button-user.two {
-  background-color: #e53e3e;
+  background: linear-gradient(135deg, #e53e3e, #b30000);
 }
 .button-user.two:hover {
-  background-color: #d42020;
+  background: linear-gradient(135deg, #ff4d4d, #cc0000);
 }
 
 @media (min-width: 768px) and (max-width: 1024px) {
@@ -478,7 +487,7 @@ input:focus {
   justify-items: center;
 }
 .table-container table th {
-  background-color: #b60043;
+  background-color: #e53e3e;
   color: white;
   font-size: 16px;
   text-transform: uppercase;
@@ -490,12 +499,44 @@ input:focus {
 .table-container table tr:hover {
   background-color: rgba(217.0434782609, 208.6086956522, 195.9565217391, 0.9019607843);
 }
+.table-container .filtros {
+  display: flex;
+  flex-direction: column;
+  padding: 2%;
+}
+.table-container .filtros .labelsFiltros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.table-container .filtros h2 {
+  display: flex;
+  text-align: center;
+}
+.table-container .buttonAdmin {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  color: white;
+  transition: 0.5s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: grey;
+}
+.table-container .buttonAdmin:hover {
+  background-color: rgb(75, 75, 75);
+}
 .table-container .botonNoAceptados {
   position: absolute;
   top: 5%;
   left: 10%;
   padding: 10px 20px;
-  background-color: #b60043;
+  background-color: #e53e3e;
   color: white;
   border: none;
   border-radius: 5px;
@@ -504,7 +545,7 @@ input:focus {
   transition: background-color 0.3s ease;
 }
 .table-container .botonNoAceptados:hover {
-  background-color: rgb(131, 0, 48.2252747253);
+  background-color: rgb(211.5068493151, 28.4931506849, 28.4931506849);
 }
 .table-container .botonBajaUsuario {
   flex: 1; /* Hace que los botones se estiren y tengan el mismo tamaño */
@@ -529,18 +570,18 @@ input:focus {
   background-color: transparent;
   color: red;
   font-weight: bold;
-  border: 2px solid #b60043;
+  border: 2px solid #e53e3e;
   padding: 6px 10px;
 }
 .table-container .delete-button:hover {
-  background-color: #b60043;
+  background-color: #e53e3e;
   color: white;
 }
 .table-container a {
   display: block;
   margin-top: 15px;
   text-decoration: none;
-  color: #b60043;
+  color: #e53e3e;
   font-weight: bold;
   text-align: center;
 }
