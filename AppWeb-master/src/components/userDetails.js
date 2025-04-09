@@ -1,5 +1,5 @@
 import { doc, getDoc, updateDoc} from "firebase/firestore";
-import React, {  use, useEffect, useState } from "react";
+import React, {   useEffect, useState } from "react";
 import { db } from "../firebaseConfig";
 import NavBar from "./navBar";
 import { useLocation } from "react-router-dom";
@@ -89,7 +89,7 @@ const UserDetails = () =>{
                 }
                 {!solicitud?(
                   <p>El usuario {user.nombre} {user.apellido} no realizó una solicitud</p>
-                ):solicitud && !solicitud.turno? (
+                ):solicitud && !solicitud.reserva? (
                     <div>   
                       <label>Turno para {user.nombre} {user.apellido}</label>
                       <input 
@@ -118,7 +118,7 @@ const UserDetails = () =>{
                 ):(
                     <p>
                         El usuario {user.nombre} {user.apellido} tiene turno para{" "}
-                        {solicitud.turno.toDate().toLocaleString("es-AR", {
+                        {solicitud.reserva.toDate().toLocaleString("es-AR", {
                             day: "2-digit",
                             month: "2-digit",
                             year: "numeric",

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {  db } from "../firebaseConfig";
 import NavBar from "./navBar";
-import {
-  onSnapshot,
+import { 
   getDocs,
   collection,
   deleteDoc,
@@ -39,51 +38,28 @@ const Admin = () => {
   
 
   useEffect(() => {
-    const unsubUsuarios = onSnapshot(collection(db, "usuarios"), async (usuariosSnapshot) => {
+    const obtenerUsuarios = async () => {
+      const usuariosSnapshot = await getDocs(collection(db, "usuarios"));
       const solicitudesSnapshot = await getDocs(collection(db, "solicitudes"));
-      const hoy = new Date();
   
-      const usuariosData = await Promise.all(
-        usuariosSnapshot.docs.map(async (usuarioDoc) => {
-          const data = usuarioDoc.data();
-          const solicitudDoc = solicitudesSnapshot.docs.find((s) => s.id === usuarioDoc.id);
-  
-          const fechaInicio = data.fechaDeInicio?.toDate?.();
-          const fechaVencimiento = data.fechaDeVencimiento?.toDate?.();
-          let estado = "";
-  
-          if (solicitudDoc) {
-            if (fechaInicio && fechaVencimiento && hoy >= fechaInicio && hoy <= fechaVencimiento) {
-              estado = "activo";
-            } else if (fechaVencimiento && hoy > fechaVencimiento) {
-              // ❌ Solicitud vencida: eliminarla y resetear fechas
-              await deleteDoc(doc(db, "solicitudes", usuarioDoc.id));
-              await updateDoc(usuarioDoc.ref, {
-                fechaDeInicio: null,
-                fechaDeVencimiento: null,
-              });
-              estado = "inactivo";
-            } else {
-              estado = "pendiente";
-            }
-          } else {
-            estado = "inactivo";
-          }
-  
-          return {
-            id: usuarioDoc.id,
-            ...data,
-            estado,
-          };
-        })
-      );
+      const usuariosData = usuariosSnapshot.docs.map((usuarioDoc) => {
+        const data = usuarioDoc.data();
+        const solicitudDoc = solicitudesSnapshot.docs.find((s) => s.id === usuarioDoc.id);
+        
+        return {
+          id: usuarioDoc.id,
+          ...data,
+          estado: solicitudDoc ? "pendiente" : "inactivo", // No se evalúa activación acá
+        };
+      });
   
       setUsuarios(usuariosData);
       setLoading(false);
-    });
+    };
   
-    return () => unsubUsuarios(); // Limpieza al desmontar
+    obtenerUsuarios();
   }, []);
+  
   
   
 
@@ -131,28 +107,67 @@ const Admin = () => {
   
   const handleChange = async (id, campo, valor) => {
     const fechaAjustada = valor === "" ? null : Timestamp.fromDate(ajustarFechaBuenosAires(valor));
+    const hoy = new Date();
   
     try {
       const userRef = doc(db, "usuarios", id);
-      await updateDoc(userRef,{
-          [campo]:fechaAjustada
-        })
-      
-      setUsuarios((prevUsuarios) =>
-        prevUsuarios.map((usuario) =>
-          usuario.id === id
+      await updateDoc(userRef, {
+        [campo]: fechaAjustada
+      });
+  
+      const usuarioDoc = await getDoc(userRef);
+      const data = usuarioDoc.data();
+  
+      const fechaInicio = data.fechaDeInicio?.toDate?.();
+      const fechaVencimiento = data.fechaDeVencimiento?.toDate?.();
+  
+      let estado = "inactivo";
+      let fechasActualizadas = {};
+  
+      const solicitudRef = doc(db, "solicitudes", id);
+      const solicitudDoc = await getDoc(solicitudRef);
+  
+      if (solicitudDoc.exists()) {
+        if (fechaInicio && fechaVencimiento && hoy >= fechaInicio && hoy <= fechaVencimiento) {
+          estado = "activo";
+        } else if (fechaVencimiento && hoy > fechaVencimiento) {
+          // vencido: eliminamos solicitud y reseteamos fechas
+          await deleteDoc(solicitudRef);
+          await updateDoc(userRef, {
+            fechaDeInicio: null,
+            fechaDeVencimiento: null,
+          });
+          estado = "inactivo";
+          fechasActualizadas = {
+            fechaDeInicio: null,
+            fechaDeVencimiento: null,
+          };
+        } else {
+          estado = "pendiente";
+        }
+      }
+  
+      await updateDoc(userRef, {
+        estado: estado
+      });
+  
+      // 🔄 Actualizamos el estado local con estado y fechas actualizadas (si las hay)
+      setUsuarios((prev) =>
+        prev.map((user) =>
+          user.id === id
             ? {
-                ...usuario,
-                [campo]: fechaAjustada,
-                ...(fechaAjustada ? { estado: "activo" } : {})  // Esto solo agrega estado si hay fecha
+                ...user,
+                ...data,
+                ...fechasActualizadas,
+                estado,
               }
-            : usuario
+            : user
         )
       );
-      
-      alert("Fecha Actualizada");
+  
+      alert("Fecha y estado actualizados correctamente");
     } catch (error) {
-      console.error("Error actualizando fecha:", error);
+      console.error("Error al actualizar:", error);
     }
   };
   
@@ -230,7 +245,7 @@ const Admin = () => {
                   <td>{usuario.nombre} {usuario.apellido}</td>
                   <td>{usuario.email}</td>
                   <td>{usuario.localidad}</td>
-                  <td>{usuario.estado}</td>
+                  <td>{usuario.role==="user"? usuario.estado:"Es admin"}</td>
                   <td>
                     <input
                       type="date"
