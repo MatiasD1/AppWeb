@@ -244,7 +244,7 @@ const Admin = () => {
               .map((usuario) => (
                 <tr key={usuario.id}>
                   
-                  <td><button className="button-user one"  onClick={()=>CambioDeRol(usuario.id)}>{usuario.role}</button></td>
+                  <td><button className="buttonAdmin"  onClick={()=>CambioDeRol(usuario.id)}>{usuario.role}</button></td>
                   <td>{usuario.nombre} {usuario.apellido}</td>
                   <td>{usuario.email}</td>
                   <td>{usuario.localidad}</td>
@@ -279,7 +279,7 @@ const Admin = () => {
 
                   <td>{localStorage.getItem(`uploadedImage_${usuario?.email}`)?(
                       <button 
-                        className="button-user one" 
+                        className="buttonAdmin" 
                         onClick={()=>handelImageClick(localStorage.getItem(`uploadedImage_${usuario?.email}`))} 
                       >
                         Ver Imagen
@@ -289,7 +289,7 @@ const Admin = () => {
                     }
                   </td>
                   <td>
-                    <button className="button-user one" disabled={usuario.role==="admin"} onClick={()=>navigate("/userDetails",{state:{id:usuario.id}})}>Ver más</button>
+                    <button className="buttonAdmin" disabled={usuario.role==="admin"} onClick={()=>navigate("/userDetails",{state:{id:usuario.id}})}>Ver más</button>
                   </td>
                   <td>
                     <button className="botonBajaUsuario" onClick={() => ManejarBaja(usuario.id)}>
