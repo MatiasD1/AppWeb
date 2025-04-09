@@ -188,31 +188,34 @@ const Admin = () => {
           <br/>    
           <h2>Lista de Usuarios Registrados</h2>
           <div className="filtros">
-          <label>
-            Localidad:
-            <input
-              type="text"
-              value={filtros.localidad}
-              onChange={(e) => setFiltros({ ...filtros, localidad: e.target.value })}
-            />
-          </label>
-          <label>
-            Estado:
-            <input
-              type="text"
-              value={filtros.estado}
-              onChange={(e) => setFiltros({ ...filtros, estado: e.target.value })}
-            />
-          </label>
-          <label>
-            Nombre:
-            <input
-              type="text"
-              value={filtros.nombre}
-              onChange={(e) => setFiltros({ ...filtros, nombre: e.target.value })}
-            />
-          </label>
-        </div>
+            <h4>Filtrar</h4>
+            <div className="labelsFiltros">
+              <label>
+                <input
+                  type="text"
+                  placeholder="Localidad"
+                  value={filtros.localidad}
+                  onChange={(e) => setFiltros({ ...filtros, localidad: e.target.value })}
+                />
+              </label>
+              <label>
+                <input
+                  type="text"
+                  placeholder="Estado"
+                  value={filtros.estado}
+                  onChange={(e) => setFiltros({ ...filtros, estado: e.target.value })}
+                />
+              </label>
+              <label>
+                <input
+                  type="text"
+                  placeholder="Nombre"
+                  value={filtros.nombre}
+                  onChange={(e) => setFiltros({ ...filtros, nombre: e.target.value })}
+                />
+              </label>
+            </div>
+          </div>
 
         <table>
           <thead>

@@ -64,6 +64,22 @@ $table-border: #ddd;
     }
   }
 
+  .filtros{
+    display: flex;
+    flex-direction: column;
+    padding: 2%;
+    
+    .labelsFiltros {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px; // Espacio entre inputs, puedes ajustar el valor
+    }
+    
+    h2{
+      display: flex;
+      text-align: center;
+    }
+  }
   .botonNoAceptados {
     position: absolute;
     top: 5%; 

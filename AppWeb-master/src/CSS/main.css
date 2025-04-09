@@ -490,6 +490,20 @@ input:focus {
 .table-container table tr:hover {
   background-color: rgba(217.0434782609, 208.6086956522, 195.9565217391, 0.9019607843);
 }
+.table-container .filtros {
+  display: flex;
+  flex-direction: column;
+  padding: 2%;
+}
+.table-container .filtros .labelsFiltros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.table-container .filtros h2 {
+  display: flex;
+  text-align: center;
+}
 .table-container .botonNoAceptados {
   position: absolute;
   top: 5%;

@@ -31,35 +31,54 @@ const Register = () => {
   const [passwordError, setPasswordError] = useState("");
   const [touchedFields, setTouchedFields] = useState({});
   const [loading, setLoading] = useState(false);
-  const partidosBuenosAires = [
-    "Adolfo Alsina", "Adolfo Gonzales Chaves", "Alberti", "Almirante Brown", "Arrecifes", "Avellaneda",
-    "Ayacucho", "Azul", "Bahía Blanca", "Balcarce", "Baradero", "Benito Juárez", "Berazategui",
-    "Berisso", "Bolívar", "Bragado", "Brandsen", "Campana", "Cañuelas", "Capitán Sarmiento",
-    "Carlos Casares", "Carlos Tejedor", "Carmen de Areco", "Castelli", "Chacabuco", "Chascomús",
-    "Chivilcoy", "Colón", "Coronel Dorrego", "Coronel Pringles", "Coronel Rosales", "Coronel Suárez",
-    "Daireaux", "Dolores", "Ensenada", "Escobar", "Esteban Echeverría", "Exaltación de la Cruz",
-    "Ezeiza", "Florencio Varela", "Florentino Ameghino", "General Alvarado", "General Alvear",
-    "General Arenales", "General Belgrano", "General Guido", "General Juan Madariaga",
-    "General La Madrid", "General Las Heras", "General Lavalle", "General Paz", "General Pinto",
-    "General Pueyrredón", "General Rodríguez", "General San Martín", "General Viamonte",
-    "General Villegas", "Guaminí", "Hipólito Yrigoyen", "Hurlingham", "Ituzaingó", "José C. Paz",
-    "Junín", "La Costa", "La Matanza", "Lanús", "La Plata", "Laprida", "Las Flores", "Leandro N. Alem",
-    "Lincoln", "Lobería", "Lobos", "Lomas de Zamora", "Luján", "Magdalena", "Maipú", "Malvinas Argentinas",
-    "Mar Chiquita", "Marcos Paz", "Mercedes", "Merlo", "Monte", "Monte Hermoso", "Moreno", "Morón",
-    "Navarro", "Necochea", "Olavarría", "Patagones", "Pehuajó", "Pellegrini", "Pergamino",
-    "Pila", "Pilar", "Pinamar", "Presidente Perón", "Puán", "Punta Indio", "Quilmes", "Ramallo",
-    "Rauch", "Rivadavia", "Rojas", "Roque Pérez", "Saavedra", "Saladillo", "Salliqueló", "Salto",
-    "San Andrés de Giles", "San Antonio de Areco", "San Cayetano", "San Fernando", "San Isidro",
-    "San Miguel", "San Nicolás", "San Pedro", "San Vicente", "Suipacha", "Tandil", "Tapalqué",
-    "Tigre", "Tordillo", "Tornquist", "Trenque Lauquen", "Tres Arroyos", "Tres de Febrero",
-    "Tres Lomas", "Vicente López", "Villa Gesell", "Villarino", "Zárate"
-  ];
+  const [selectedProvincia, setSelectedProvincia] = useState("");
+  const provinciasConLocalidades = {
+    "Buenos Aires": ["La Plata", "Mar del Plata", "Bahía Blanca", "Tandil"],
+    "Catamarca": ["San Fernando del Valle de Catamarca", "Andalgalá", "Belén"],
+    "Chaco": ["Resistencia", "Saenz Peña", "Villa Ángela"],
+    "Chubut": ["Rawson", "Comodoro Rivadavia", "Puerto Madryn"],
+    "Córdoba": ["Córdoba", "Villa María", "Río Cuarto", "San Francisco"],
+    "Corrientes": ["Corrientes", "Goya", "Mercedes"],
+    "Entre Ríos": ["Paraná", "Concordia", "Gualeguaychú"],
+    "Formosa": ["Formosa", "Clorinda", "Pirané"],
+    "Jujuy": ["San Salvador de Jujuy", "Palpalá", "Libertador General San Martín"],
+    "La Pampa": ["Santa Rosa", "General Pico", "Toay"],
+    "La Rioja": ["La Rioja", "Chilecito", "Chamical"],
+    "Mendoza": ["Mendoza", "San Rafael", "Godoy Cruz"],
+    "Misiones": ["Posadas", "Oberá", "Eldorado"],
+    "Neuquén": ["Neuquén", "San Martín de los Andes", "Cutral Có"],
+    "Río Negro": ["Viedma", "San Carlos de Bariloche", "General Roca"],
+    "Salta": ["Salta", "San Ramón de la Nueva Orán", "Tartagal"],
+    "San Juan": ["San Juan", "Rawson", "Chimbas"],
+    "San Luis": ["San Luis", "Villa Mercedes", "Merlo"],
+    "Santa Cruz": ["Río Gallegos", "Caleta Olivia", "El Calafate"],
+    "Santa Fe": ["Santa Fe", "Rosario", "Rafaela"],
+    "Santiago del Estero": ["Santiago del Estero", "La Banda", "Termas de Río Hondo"],
+    "Tierra del Fuego": ["Ushuaia", "Río Grande", "Tolhuin"],
+    "Tucumán": ["San Miguel de Tucumán", "Tafí Viejo", "Concepción"],
+    "Ciudad Autónoma de Buenos Aires": ["Buenos Aires"]
+  };
+  
   
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-  
+    
+    if (name === "provincia") {
+      setSelectedProvincia(value);
+      setFormData({
+        ...formData,
+        provincia: value,
+        localidad: "", // Reseteamos localidad al cambiar provincia
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: type === "checkbox" ? checked : value,
+      });
+    }
+    
     setFormData({
       ...formData,
       [name]: type === "checkbox" ? checked : value,
@@ -165,7 +184,8 @@ const Register = () => {
           { name: "apellido", label: "Apellido", value: formData.apellido },
           { name: "email", label: "Correo electrónico", type: "email", value: formData.email },
           { name: "telefono", label: "Teléfono", value: formData.telefono },
-          { name: "localidad", label: "Localidad", type: "select", options: partidosBuenosAires, value: formData.localidad },
+          { name: "provincia", label: "Provincia", type: "select", options: Object.keys(provinciasConLocalidades), value: selectedProvincia },
+          { name: "localidad", label: "Localidad", type: "select", options: selectedProvincia ? provinciasConLocalidades[selectedProvincia] : [], value: formData.localidad }
         ];
       case 2:
         return [
