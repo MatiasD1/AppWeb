@@ -1,35 +1,65 @@
 .solicitud-container {
-  margin: 0px;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  min-height: 100vh;
+  padding: 2rem;
+  animation: fadeIn 0.5s ease-in-out;
+}
 
-  .solicitud{// Para que los elementos no ocupen todo el ancho de la pantalla
-      display: inline-block;
-      padding-top: 5%;
+.solicitud-box {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 100%;
+}
 
-    .button-solicitar {
-      padding: 10px 20px;
-      background-color: #9e0039;
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    } 
-    
-    .button-solicitar:hover {
-      background-color: #6f0000;
-    }
-    
-    .button-solicitar:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-    
-    p {
-      font-size: 16px;
-      margin-top: 10px;
-    }
+h2 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+p {
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  color: #555;
+}
+
+.button-solicitar {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0.5rem;
+  background-color: #9e0039;
+  color: white;
+}
+
+.button-solicitar:hover {
+  background-color: #6f0000;
+}
+
+.button-solicitar:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+
+/* Animación */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

@@ -153,7 +153,7 @@ const SolicitudTurno = () => {
     <NavBar/>
     <div className="solicitud-container">
       
-      <div className="solicitudContainerBody">
+      <div className="solicitud-box">
         <h2>Solicitar Publicidad</h2>
         <p>
           {solicitudEnviada 
@@ -170,33 +170,41 @@ const SolicitudTurno = () => {
     ):solicitud.estado==="solicitud pendiente"?(
     <>
     <NavBar/>
-    <div className="solicitudContainerBody">
+    <div className="solicitud-container">
       <br/>
-      <h2>No hay turnos disponible aún, se le notificará cuando haya algún turno</h2>
+      <div className="solicitud-box">
+        <h2>No hay turnos disponible aún, se le notificará cuando haya algún turno</h2>
+      </div>
     </div>  
     </>
     ):solicitud.estado==="solicitud contestada"?(
       <>
       <NavBar/>
-      <div className="solicitudContainerBody">
-        <h2>Horario Sugerido: {solicitud.turno.toDate().toLocaleString().slice(0,19)}</h2>
-        <button className="button-user one" onClick={HandelAceptar}>Aceptar</button>
-        <button className="button-user two" onClick={HandleRechazo}>Rechazar</button>   
+      <div className="solicitud-container">
+        <div className="solicitud-box">
+          <h2>Horario Sugerido: {solicitud.turno.toDate().toLocaleString().slice(0,19)}</h2>
+          <button className="button-user one" onClick={HandelAceptar}>Aceptar</button>
+          <button className="button-user two" onClick={HandleRechazo}>Rechazar</button>   
+        </div>
       </div>
       </>
     ):solicitud.estado==="turno reservado"?(
       <>
       <NavBar/>
-      <div className="solicitudContainerBody">
-        <h2>El usuario {usuario.nombre} {usuario.apellido} tiene reserva para el dia {solicitud.reserva.toDate().toLocaleString().slice(0,19)}</h2>
+      <div className="solicitud-container">
+        <div className="solicitud-box">
+          <h2>El usuario {usuario.nombre} {usuario.apellido} tiene reserva para el dia {solicitud.reserva.toDate().toLocaleString().slice(0,19)}</h2>
+        </div>
       </div>
       </>
     ):(
     <>
       <NavBar/>
-      <div className="solicitudContainerBody">
-        <h2>Usuario Activo</h2>
-        <h2>Publicidad desde {usuario.fechaDeInicio.toDate().toLocaleString().slice(0,19)} hasta {usuario.fechaDeVencimiento.toDate().toLocaleString().slice(0,19)}</h2>
+      <div className="solicitud-container">
+        <div className="solicitud-box">
+          <h2>Usuario Activo</h2>
+          <h2>Publicidad desde {usuario.fechaDeInicio.toDate().toLocaleString().slice(0,19)} hasta {usuario.fechaDeVencimiento.toDate().toLocaleString().slice(0,19)}</h2>
+        </div>
       </div>
     </>  
     )
