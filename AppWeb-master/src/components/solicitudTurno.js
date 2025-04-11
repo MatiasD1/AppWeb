@@ -6,10 +6,10 @@ import { getUserName } from "../auth";
 import NavBar from "./navBar";
 import Loading from "./Loading";
 import { useLocation } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const SolicitudTurno = () => {
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
   const [solicitudEnviada, setSolicitudEnviada] = useState(false); // Estado para bloquear envío
   const [isLoading, setIsLoading] = useState(true); // Estado para controlar la carga
   const [solicitud, setSolicitud] = useState(null);
@@ -44,16 +44,10 @@ const SolicitudTurno = () => {
 
 
   const handleSolicitarPublicitar = async () => {
-    if (solicitudEnviada) {
-      setMessage("Ya has enviado una solicitud. No puedes enviar otra.");
-      return;
-    }
-
     setLoading(true);
     try {
       const user = auth.currentUser;
       if (!user) {
-        setMessage("No estás autenticado.");
         setLoading(false);
         return;
       }
@@ -61,34 +55,43 @@ const SolicitudTurno = () => {
       const userRef = doc(db,"usuarios", user.uid);
       await updateDoc(userRef,{estado:"pendiente"});
       const solicitudRef = doc(db, "solicitudes", user.uid);
-      const solicitudSnap = await getDoc(solicitudRef);
 
-      if (solicitudSnap.exists()) {
-        setMessage("Ya has enviado una solicitud. No puedes enviar otra.");
-        setLoading(false);
-        return;
-      }
-
+      Swal.fire({
+        title: "Enviando solicitud...",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+      });
       const { nombre, apellido } = await getUserName(user.uid);
       const solicitud = {
         nombre: `${nombre} ${apellido}`,
         email: user.email,
         fecha: Timestamp.fromDate(new Date()),
-        estado: "solicitud pendiente",
-        turno: null
+        estado: "solicitud pendiente"
       };
 
       await setDoc(solicitudRef, solicitud);
       setSolicitudEnviada(true); 
+      Swal.fire("Solicitud enviada", "", "success");
     } catch (error) {
       console.error("Error al enviar solicitud:", error);
-      setMessage("Hubo un error al enviar la solicitud.");
+      Swal.fire("Error", "No se pudo eliminar la imagen", "error");
     } finally {
       setLoading(false);
     }
   };
 
   const HandelAceptar = async() =>{
+    const confirmed = await Swal.fire({
+          title: "¿Aceptar turno?",
+          text: "Esta acción no se puede deshacer.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Sí, aceptar",
+          cancelButtonText: "Cancelar",
+        });
+      
+    if (!confirmed.isConfirmed) return;
+    
     try {
       const solRef = doc(db,"solicitudes",id);
       await updateDoc(solRef,{
@@ -96,17 +99,28 @@ const SolicitudTurno = () => {
         reserva:solicitud.turno,
         turno:deleteField()
       });
-      alert("Turno aceptado, lo esperamos");
+      Swal.fire("Turno reservado", "", "success");
       const updatedSnap = await getDoc(solRef);
       if (updatedSnap.exists()) {
         setSolicitud(updatedSnap.data());
       }
     } catch (error) {
-      console.error("Error al borrar el turno",error);
+      Swal.fire("Error", "No se pudo reservar el turno", "error");
     }
   }
 
   const HandleRechazo = async() =>{
+    const confirmed = await Swal.fire({
+          title: "¿Rechazar turno?",
+          text: "Esta acción no se puede deshacer.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Sí, rechazar",
+          cancelButtonText: "Cancelar",
+    });
+      
+    if (!confirmed.isConfirmed) return;
+       
     try {
       const solRef = doc(db,"solicitudes",id);
       await updateDoc(solRef,{
@@ -114,13 +128,13 @@ const SolicitudTurno = () => {
         turno:deleteField(),
         reserva:deleteField()
       });
-      alert("Turno rechazado, a la brevedad se le sugerirá otro");
+      Swal.fire("Turno rechazado, el administrador le informará cuanod haya otro disponible", "", "success");
       const updatedSnap = await getDoc(solRef);
       if (updatedSnap.exists()) {
         setSolicitud(updatedSnap.data());
       }
     } catch (error) {
-      console.error("Error al borrar el turno",error);
+      Swal.fire("Error", "No se pudo rechazar el turno", "error");
     }
   }
 
@@ -131,7 +145,7 @@ const SolicitudTurno = () => {
     <NavBar/>
     <div className="solicitud-container">
       
-      <div className="solicitudContainerBody">
+      <div className="solicitud-box">
         <h2>Solicitar Publicidad</h2>
         <p>
           {solicitudEnviada 
@@ -148,33 +162,41 @@ const SolicitudTurno = () => {
     ):solicitud.estado==="solicitud pendiente"?(
     <>
     <NavBar/>
-    <div className="solicitudContainerBody">
+    <div className="solicitud-container">
       <br/>
-      <h2>No hay turnos disponible aún, se le notificará cuando haya algún turno</h2>
+      <div className="solicitud-box">
+        <h2>No hay turnos disponible aún, se le notificará cuando haya algún turno</h2>
+      </div>
     </div>  
     </>
     ):solicitud.estado==="solicitud contestada"?(
       <>
       <NavBar/>
-      <div className="solicitudContainerBody">
-        <h2>Horario Sugerido: {solicitud.turno.toDate().toLocaleString().slice(0,19)}</h2>
-        <button className="button-user one" onClick={HandelAceptar}>Aceptar</button>
-        <button className="button-user two" onClick={HandleRechazo}>Rechazar</button>   
+      <div className="solicitud-container">
+        <div className="solicitud-box">
+          <h2>Horario Sugerido: {solicitud.turno.toDate().toLocaleString().slice(0,19)}</h2>
+          <button className="button-user one" onClick={HandelAceptar}>Aceptar</button>
+          <button className="button-user two" onClick={HandleRechazo}>Rechazar</button>   
+        </div>
       </div>
       </>
     ):solicitud.estado==="turno reservado"?(
       <>
       <NavBar/>
-      <div className="solicitudContainerBody">
-        <h2>El usuario {usuario.nombre} {usuario.apellido} tiene reserva para el dia {solicitud.reserva.toDate().toLocaleString().slice(0,19)}</h2>
+      <div className="solicitud-container">
+        <div className="solicitud-box">
+          <h2>El usuario {usuario.nombre} {usuario.apellido} tiene reserva para el dia {solicitud.reserva.toDate().toLocaleString().slice(0,19)}</h2>
+        </div>
       </div>
       </>
     ):(
     <>
       <NavBar/>
-      <div className="solicitudContainerBody">
-        <h2>Usuario Activo</h2>
-        <h2>Publicidad desde {usuario.fechaDeInicio.toDate().toLocaleString().slice(0,19)} hasta {usuario.fechaDeVencimiento.toDate().toLocaleString().slice(0,19)}</h2>
+      <div className="solicitud-container">
+        <div className="solicitud-box">
+          <h2>Usuario Activo</h2>
+          <h2>Publicidad desde {usuario.fechaDeInicio.toDate().toLocaleString().slice(0,19)} hasta {usuario.fechaDeVencimiento.toDate().toLocaleString().slice(0,19)}</h2>
+        </div>
       </div>
     </>  
     )

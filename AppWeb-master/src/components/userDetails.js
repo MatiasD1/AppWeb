@@ -5,6 +5,7 @@ import NavBar from "./navBar";
 import { useLocation } from "react-router-dom";
 import Loading from "./Loading";
 import { Timestamp } from "firebase/firestore";
+import Swal from "sweetalert2";
 
 const UserDetails = () =>{
     const [user, setUser] = useState(null);  
@@ -47,13 +48,27 @@ const UserDetails = () =>{
 
     const HandleChange = async (fecha) => {
         try {
+          const confirmed = await Swal.fire({
+                title: "Guardar Turno?",
+                text: "Esta acción no se puede deshacer.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, guardar",
+                cancelButtonText: "Cancelar",
+          });
+          if (!confirmed.isConfirmed) return;
+          Swal.fire({
+            title: "Guardando turno...",
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading(),
+          });
           const solicitudRef = doc(db, "solicitudes", id);
           await updateDoc(solicitudRef, {
             estado: "solicitud contestada",
             turno: Timestamp.fromDate(fecha),
             reserva:null
           });
-          alert("Turno cargado");
+          Swal.fire("Turno guardado", "", "success");
         } catch (error) {
           console.error("Error al guardar el turno", error);
         }
@@ -64,72 +79,92 @@ const UserDetails = () =>{
     if (!user) return <p>Cargando usuario...</p>
 
     return (
-        <div >
-            <NavBar />
-            <h2>Detalles del Usuario</h2>
-            <br/>
-            <form className="formContainer">
-                <label>Nombre:</label>
-                <input type="text" defaultValue={user.nombre} />
-                <label>Apellido:</label>
-                <input type="text" defaultValue={user.apellido}></input>
-                <label>Email:</label>
-                <input type="email" defaultValue={user.email} />
-                <label>Licencia:</label>
-                <input type="number" defaultValue={user.licencia} />
-                <label>Marca de auto:</label>
-                <input type="text" defaultValue={user.marcaAuto} />
-                <label>Modelo de Auto:</label>
-                <input type="text" defaultValue={user.modeloAuto} />
-                {imageUser ? ( 
-                    <img src={imageUser} alt="" className="formContainer"/>
-                    ):(
-                        <p>No hay imagen cargada</p>
-                    )
-                }
-                {!solicitud?(
-                  <p>El usuario {user.nombre} {user.apellido} no realizó una solicitud</p>
-                ):solicitud && !solicitud.reserva? (
-                    <div>   
-                      <label>Turno para {user.nombre} {user.apellido}</label>
-                      <input 
-                        type="datetime-local"
-                        name="turno"
-                        onChange={(e) => setNuevoTurno(e.target.value)}
-                      />
-                      <button 
-                        type="button" 
-                        onClick={() => {
-                          if (nuevoTurno) {
-                            const fecha = new Date(nuevoTurno);
-                            if (!isNaN(fecha)) {
-                              HandleChange(fecha);
-                            } else {
-                              alert("Fecha inválida");
-                            }
-                          } else {
-                            alert("Por favor seleccione fecha y hora.");
-                          }
-                        }}
-                      >
-                        Guardar turno
-                      </button>
-                    </div>                  
-                ):(
-                    <p>
-                        El usuario {user.nombre} {user.apellido} tiene turno para{" "}
-                        {solicitud.reserva.toDate().toLocaleString("es-AR", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit"
-                        })}
-                    </p>
-                )}
-            </form>
-        </div>
-    )
-}
+      <div>
+        <NavBar />
+        <h2>Detalles del Usuario</h2>
+        <form className="formContainer">
+          <label>Nombre:</label>
+          <input type="text" defaultValue={user.nombre} />
+          <label>Apellido:</label>
+          <input type="text" defaultValue={user.apellido} />
+          <label>Email:</label>
+          <input type="email" defaultValue={user.email} />
+          <label>Licencia:</label>
+          <input type="number" defaultValue={user.licencia} />
+          <label>Marca de auto:</label>
+          <input type="text" defaultValue={user.marcaAuto} />
+          <label>Modelo de Auto:</label>
+          <input type="text" defaultValue={user.modeloAuto} />
+        </form>
+          <div className="vehicleSection">
+            <h4>Foto del vehículo:</h4>
+            {imageUser ? (
+              <img src={imageUser} alt="Foto del vehículo" className="userCarImage" />
+            ) : (
+              <p>No hay imagen cargada</p>
+            )}
+          </div>
+  
+          <div className="turnoSection">
+            {!solicitud ? (
+              <p>
+                El usuario {user.nombre} {user.apellido} no realizó una solicitud
+              </p>
+            ) : !solicitud.turno ? (
+              <div>
+                <label>Turno para {user.nombre} {user.apellido}</label>
+                <input
+                  className="turnoInput"
+                  type="datetime-local"
+                  name="turno"
+                  onChange={(e) => setNuevoTurno(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (nuevoTurno) {
+                      const fecha = new Date(nuevoTurno);
+                      if (!isNaN(fecha)) {
+                        HandleChange(fecha);
+                      } else {
+                        alert("Fecha inválida");
+                      }
+                    } else {
+                      alert("Por favor seleccione fecha y hora.");
+                    }
+                  }}
+                >
+                  Guardar turno
+                </button>
+              </div>
+            ) : !solicitud.reserva ? (
+              <p>
+                El usuario {user.nombre} {user.apellido} debe aceptar o rechazar
+                el turno del día{" "}
+                {solicitud.turno.toDate().toLocaleString("es-AR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+                .
+              </p>
+            ) : (
+              <p>
+                El usuario {user.nombre} {user.apellido} tiene turno para{" "}
+                {solicitud.reserva.toDate().toLocaleString("es-AR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </p>
+            )}
+          </div>
+      </div>
+    );
+  };
 
 export default UserDetails;

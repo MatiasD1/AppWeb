@@ -11,7 +11,6 @@ $table-border: #ddd;
   background-color: #ede9e3e6;
   position: relative;
   width: 100%;
-  overflow-x: auto;
   padding: 20px;
   box-sizing: border-box;
   min-width: 100vw;
@@ -29,7 +28,7 @@ $table-border: #ddd;
     background-color: white;
     text-align: center;
     border-radius: 8px;
-    overflow: hidden;
+    overflow: auto;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     border-spacing: 0;
     margin:0 auto;
@@ -41,8 +40,6 @@ $table-border: #ddd;
       white-space: normal;
       word-wrap: break-word;
       max-width: 150px;
-      overflow: hidden;
-      text-overflow: ellipsis;
       align-items: center;
       justify-items: center;
     }
@@ -99,7 +96,7 @@ $table-border: #ddd;
     }
   }
   .botonNoAceptados {
-    position: absolute;
+    position: static;
     top: 5%; 
     left: 10%; 
     padding: 10px 20px;
@@ -158,4 +155,16 @@ $table-border: #ddd;
     text-align: center;
   }
   
+}
+
+@media (max-width: 768px) {
+  .table-container {
+    overflow-x: auto;
+
+    table {
+      display: block;
+      width: 100%;
+      min-width: 600px;
+    }
+  }
 }

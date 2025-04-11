@@ -11,7 +11,6 @@ import Admin from "./components/admin"; // Asegúrate de tener este componente
 import User from "./components/user"; // Asegúrate de tener este componente
 import Footer from "./components/footer"; // Asegúrate de importar el Footer
 import UserDetails from './components/userDetails';
-import Publicidad from './components/publicidad';
 import { UserProvider } from './userContext';
 import SolicitudTurno from './components/solicitudTurno';
 import NoAceptados from './components/noAceptados';
@@ -61,7 +60,7 @@ function App() {
             <Route path="/admin" element={userRole === "admin" ? <Admin /> : <Navigate to="/" />} />
             <Route path="/userDetails/:id" element={userRole === "admin" ? <UserDetails /> : <Navigate to="/" />} />
             <Route path="/userDetails" element={userRole === "admin" ? <UserDetails /> : <Navigate to="/" />} />
-            <Route path="/publicidad" element={userRole === "admin" ? <Publicidad /> : <Navigate to="/" />} />
+            {/*<Route path="/publicidad" element={userRole === "admin" ? <Publicidad /> : <Navigate to="/" />} />*/}
             <Route path="/noAceptados" element={userRole === "admin" ? <NoAceptados /> : <Navigate to="/" />} />
           </Routes>
           <Footer />

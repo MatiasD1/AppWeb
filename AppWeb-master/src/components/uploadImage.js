@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import emailjs from "@emailjs/browser";
 import NavBar from "./navBar";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import Loading from "./Loading";
@@ -12,7 +12,7 @@ const UploadImage = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [imageConfirmed, setImageConfirmed] = useState(false);
-
+  const navigate = useNavigate();
   const location = useLocation();
   const id = location.state.id;
   const fileInputRef = useRef(null);
@@ -165,29 +165,40 @@ const UploadImage = () => {
     <>
       <NavBar />
       <div className="upload-imageContainer">
-        <div className="upload-image">
-          <h3>Subir Imagen</h3>
-          <input 
-            type="file" 
-            accept="image/*" 
-            onChange={handleFileChange} 
-            ref={fileInputRef}
-          />
+        {user.estado==="activo"?(
+          <div className="upload-image">
+            <h3>Subir Imagen</h3>
+            <input 
+              type="file" 
+              accept="image/*" 
+              onChange={handleFileChange} 
+              ref={fileInputRef}
+            />
 
-          {preview && (
-            <>
-              <img src={preview} alt="Vista previa" width="200" />
-              <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
-                {!imageConfirmed && (
-                  <button onClick={handleConfirmUpload}>Confirmar Envío</button>
-                )}
-                {imageConfirmed && (
-                  <button onClick={handleDelete}>Eliminar Imagen</button>
-                )}
-              </div>
-            </>
-          )}
-        </div>
+            {preview && (
+              <>
+                <img src={preview} alt="Vista previa" width="200" />
+                <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
+                  {!imageConfirmed && (
+                    <button onClick={handleConfirmUpload}>Confirmar Envío</button>
+                  )}
+                  {preview && (
+
+                    <button onClick={handleDelete}>Eliminar Imagen</button>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        ):(
+          <div className="upload-image">
+            <h3>No está registrado como cliente, debe realizar una solicitud 
+              <button  onClick={()=>navigate("/solicitudTurno",{state:{id}})}>aquí</button>
+              y ser habilitado como cliente de publicidad de Wolf.
+            </h3>
+          </div>
+        )}
+        
       </div>
     </>
   );
