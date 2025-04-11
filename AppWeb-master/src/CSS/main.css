@@ -454,7 +454,6 @@ input:focus {
   background-color: rgba(237, 233, 227, 0.9019607843);
   position: relative;
   width: 100%;
-  overflow-x: auto;
   padding: 20px;
   box-sizing: border-box;
   min-width: 100vw;
@@ -469,7 +468,7 @@ input:focus {
   background-color: white;
   text-align: center;
   border-radius: 8px;
-  overflow: hidden;
+  overflow-x:auto;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   border-spacing: 0;
   margin: 0 auto;
@@ -481,8 +480,6 @@ input:focus {
   white-space: normal;
   word-wrap: break-word;
   max-width: 150px;
-  overflow: hidden;
-  text-overflow: ellipsis;
   align-items: center;
   justify-items: center;
 }
@@ -532,7 +529,7 @@ input:focus {
   background-color: rgb(75, 75, 75);
 }
 .table-container .botonNoAceptados {
-  position: absolute;
+  position:static;
   top: 5%;
   left: 10%;
   padding: 10px 20px;
@@ -585,6 +582,19 @@ input:focus {
   font-weight: bold;
   text-align: center;
 }
+
+@media (max-width: 768px) {
+  .table-container {
+    overflow-x: auto;
+
+    table {
+      display: block;
+      width: 100%;
+      min-width: 600px;
+    }
+  }
+}
+
 .solicitud-container {
   min-height: 100vh;
   display: flex;
