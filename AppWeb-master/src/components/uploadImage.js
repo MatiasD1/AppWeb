@@ -182,6 +182,7 @@ const UploadImage = () => {
                   <button onClick={handleConfirmUpload}>Confirmar Envío</button>
                 )}
                 {preview && (
+
                   <button onClick={handleDelete}>Eliminar Imagen</button>
                 )}
               </div>
