@@ -10,7 +10,6 @@ import Swal from "sweetalert2";
 
 const SolicitudTurno = () => {
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
   const [solicitudEnviada, setSolicitudEnviada] = useState(false); // Estado para bloquear envío
   const [isLoading, setIsLoading] = useState(true); // Estado para controlar la carga
   const [solicitud, setSolicitud] = useState(null);
@@ -45,16 +44,10 @@ const SolicitudTurno = () => {
 
 
   const handleSolicitarPublicitar = async () => {
-    if (solicitudEnviada) {
-      setMessage("Ya has enviado una solicitud. No puedes enviar otra.");
-      return;
-    }
-
     setLoading(true);
     try {
       const user = auth.currentUser;
       if (!user) {
-        setMessage("No estás autenticado.");
         setLoading(false);
         return;
       }
@@ -73,8 +66,7 @@ const SolicitudTurno = () => {
         nombre: `${nombre} ${apellido}`,
         email: user.email,
         fecha: Timestamp.fromDate(new Date()),
-        estado: "solicitud pendiente",
-        turno: null
+        estado: "solicitud pendiente"
       };
 
       await setDoc(solicitudRef, solicitud);

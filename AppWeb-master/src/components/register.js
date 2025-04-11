@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { db } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../auth";
-import { setDoc, doc, Timestamp } from "firebase/firestore";
+import { setDoc, doc } from "firebase/firestore";
 import AuthForm from "./authForm";
 import Loading from "./Loading";
 
@@ -13,8 +13,8 @@ const Register = () => {
     apellido: "",
     email: "",
     telefono: "",
-    fechaDeInicio: Timestamp.fromDate(new Date()),
-    fechaDeVencimiento: Timestamp.fromDate(new Date()),
+    fechaDeInicio: null,
+    fechaDeVencimiento: null,
     estado: "inactivo",
     localidad: "",
     marcaAuto: "",
