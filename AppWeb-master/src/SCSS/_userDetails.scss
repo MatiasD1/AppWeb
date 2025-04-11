@@ -1,0 +1,49 @@
+
+  .userCarImage {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    border-radius: 12px;
+    border: 3px solid #444;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    margin: 20px 0;
+    transition: transform 0.3s ease;
+  }
+  
+  .userCarImage:hover {
+    transform: scale(1.02);
+  }
+  
+  .vehicleSection {
+    margin-top: 30px;
+    text-align: center;
+  }
+  
+  .vehicleSection h4 {
+    margin-bottom: 10px;
+    color: #222;
+  }
+  
+  /* Estilo para sección del turno */
+  .turnoSection {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #e6f7ff;
+    border: 2px solid #91d5ff;
+    border-radius: 10px;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .turnoInput {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border: 1px solid #1890ff;
+    border-radius: 6px;
+    outline: none;
+  }
+  
+  .turnoInput:focus {
+    box-shadow: 0 0 5px #1890ff;
+  }
+  

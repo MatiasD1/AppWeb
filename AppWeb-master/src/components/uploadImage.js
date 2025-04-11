@@ -181,7 +181,8 @@ const UploadImage = () => {
                 {!imageConfirmed && (
                   <button onClick={handleConfirmUpload}>Confirmar Envío</button>
                 )}
-                {imageConfirmed && (
+                {preview && (
+
                   <button onClick={handleDelete}>Eliminar Imagen</button>
                 )}
               </div>

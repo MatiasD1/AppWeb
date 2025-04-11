@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 import Loading from "./Loading";
+import Swal from "sweetalert2";
 
 const Admin = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -64,19 +65,51 @@ const Admin = () => {
   
 
   const ManejarBaja = async (id) => {
+    
+    const confirmed = await Swal.fire({
+          title: "¿Eliminar usuario?",
+          text: "Esta acción no se puede deshacer.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Sí, eliminar",
+          cancelButtonText: "Cancelar",
+        });
+    if (!confirmed.isConfirmed) return;
+    Swal.fire({
+          title: "Eliminando usuario...",
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading(),
+        });
+
     try {
-      if (window.confirm("¿Estás seguro que deseas eliminar este usuario?")) {
         await deleteDoc(doc(db, "usuarios", id));
         setUsuarios(usuarios.filter((user) => user.id !== id));
-      }
+        Swal.fire("Usuario eliminada", "", "success");
     } catch (error) {
       console.error("Error eliminando usuario: ", error);
+      Swal.fire("Error", "No se pudo eliminar al usuario", "error");
     }
   };
 
 
   
   const CambioDeRol = async (id)=>{
+    
+    const confirmed = await Swal.fire({
+      title: "Cambiar rol del usuario?",
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, cambiar",
+      cancelButtonText: "Cancelar",
+    });
+    if (!confirmed.isConfirmed) return;
+    Swal.fire({
+      title: "Cambiando rol del usuario...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+    
     try {
       const userRef = doc(db, "usuarios", id);
       const userSnap = await getDoc(userRef);
@@ -88,13 +121,14 @@ const Admin = () => {
       
       const nuevoRol = userSnap.data().role === "user" ? "admin" : "user";
       await updateDoc(userRef, { role: nuevoRol });
-
+      Swal.fire("Rol cambiado", "", "success");
       setUsuarios((prev) =>
         prev.map((user) => (user.id === id ? { ...user, role: nuevoRol } : user))
       );
       
     } catch (error) {
       console.error("Error al cambiar de rol", error);
+      Swal.fire("Error", "No se pudo cambiar el rol", "error");
     }
   }
 
@@ -108,7 +142,15 @@ const Admin = () => {
   const handleChange = async (id, campo, valor) => {
     const fechaAjustada = valor === "" ? null : Timestamp.fromDate(ajustarFechaBuenosAires(valor));
     const hoy = new Date();
-  
+    const confirmed = await Swal.fire({
+          title: "¿Eliminar imagen?",
+          text: "Esta acción no se puede deshacer.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Sí, eliminar",
+          cancelButtonText: "Cancelar",
+        });
+    if (!confirmed.isConfirmed)return;
     try {
       const userRef = doc(db, "usuarios", id);
       await updateDoc(userRef, {
@@ -164,10 +206,10 @@ const Admin = () => {
             : user
         )
       );
-  
-      alert("Fecha y estado actualizados correctamente");
+      Swal.fire("Fecha y estado actualizados correctamente","","success");
     } catch (error) {
       console.error("Error al actualizar:", error);
+      Swal.fire("Error", "No se pudo actualizar las fechas", "error");
     }
   };
   

@@ -4,6 +4,7 @@ import { db } from '../firebaseConfig';
 import { doc, deleteDoc, updateDoc, getDocs, collection } from 'firebase/firestore';
 import NavBar from './navBar';
 import Loading from './Loading';
+import Swal from 'sweetalert2';
 
 const NoAceptados = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -30,27 +31,47 @@ const NoAceptados = () => {
   }, [location.state]);
 
   const RechazarUsuario = useCallback(async (id) => {
+    const confirm =await Swal.fire({
+      title: "¿Rechazar usuario?",
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, rechazar",
+      cancelButtonText: "Cancelar",
+    })
+    if (!confirm.isConfirmed)return;
     try {
-      if (window.confirm("¿Estás seguro que deseas rechazar a este usuario?")) {
-        const userRef = doc(db, "usuarios", id);
-        await deleteDoc(userRef);
-        setUsuarios(prev => prev.filter(user => user.id !== id));
-      }
+      const userRef = doc(db, "usuarios", id);
+      await deleteDoc(userRef);
+      setUsuarios(prev => prev.filter(user => user.id !== id));
+      Swal.fire("Usuario rechazado", "", "success");
     } catch (error) {
       console.error("Error dando de baja al usuario: ", error);
+      Swal.fire("Error", "No se pudo rechazar al usuario", "error");
     }
   }, []);
 
   const AceptarUsuario = useCallback(async (id) => {
+    const confirmed = await Swal.fire({
+          title: "Aceptar usuario?",
+          text: "Esta acción no se puede deshacer.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Sí, aceptar",
+          cancelButtonText: "Cancelar",
+        });
+    if (!confirmed.isConfirmed) return;
+    
     try {
-      if (window.confirm("¿Estás seguro de aceptar a este usuario?")) {
+      
         const userRef = doc(db, "usuarios", id);
         await updateDoc(userRef, { aceptado: true });
         setUsuarios(prev => prev.filter(user => user.id !== id));
         console.log("Usuario aceptado");
-      }
+        Swal.fire("Usuario aceptado", "", "success");
     } catch (error) {
       console.error("Error al aceptar al usuario");
+      Swal.fire("Error", "No se pudo aceptar al usuario", "error");
     }
   }, []);
 

@@ -585,36 +585,70 @@ input:focus {
   font-weight: bold;
   text-align: center;
 }
-
 .solicitud-container {
-  margin: 0px;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  min-height: 100vh;
+  padding: 2rem;
+  animation: fadeIn 0.5s ease-in-out;
 }
-.solicitud-container .solicitud {
-  display: inline-block;
-  padding-top: 5%;
+
+.solicitud-box {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 100%;
 }
-.solicitud-container .solicitud .button-solicitar {
-  padding: 10px 20px;
+
+h2 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+p {
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  color: #555;
+}
+
+.button-solicitar {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0.5rem;
   background-color: #9e0039;
   color: white;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s;
 }
-.solicitud-container .solicitud .button-solicitar:hover {
+
+.button-solicitar:hover {
   background-color: #6f0000;
 }
-.solicitud-container .solicitud .button-solicitar:disabled {
+
+.button-solicitar:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
-.solicitud-container .solicitud p {
-  font-size: 16px;
-  margin-top: 10px;
+
+
+/* Animación */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .register {
@@ -882,6 +916,54 @@ html, body {
   height: 100% !important;
   margin: 0 !important;
   overflow-x: hidden;
+}
+
+.userCarImage {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  border-radius: 12px;
+  border: 3px solid #444;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  margin: 20px 0;
+  transition: transform 0.3s ease;
+}
+
+.userCarImage:hover {
+  transform: scale(1.02);
+}
+
+.vehicleSection {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.vehicleSection h4 {
+  margin-bottom: 10px;
+  color: #222;
+}
+
+/* Estilo para sección del turno */
+.turnoSection {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #e6f7ff;
+  border: 2px solid #91d5ff;
+  border-radius: 10px;
+  text-align: center;
+  width: 100%;
+}
+
+.turnoInput {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border: 1px solid #1890ff;
+  border-radius: 6px;
+  outline: none;
+}
+
+.turnoInput:focus {
+  box-shadow: 0 0 5px #1890ff;
 }
 
 /*# sourceMappingURL=main.css.map */
