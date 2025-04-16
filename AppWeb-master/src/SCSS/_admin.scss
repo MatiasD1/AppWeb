@@ -157,14 +157,92 @@ $table-border: #ddd;
   
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1270px) {
   .table-container {
     overflow-x: auto;
+    padding: 10px;
 
     table {
-      display: block;
       width: 100%;
-      min-width: 600px;
+      table-layout: fixed;
+      border-collapse: collapse;
+
+      th, td {
+        white-space: nowrap; // evita saltos de línea
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 6px;
+        font-size: 12px;
+        height: 3em;
+        line-height: 1.2;
+        vertical-align: middle;
+      }
+
+      .hidden-col {
+        display: none;
+      }
+
+      td button {
+        font-size: 11px;
+        padding: 4px 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        display: inline-block;
+      }
     }
+  }
+}
+
+@media (max-width: 700px) {
+  .table-container {
+    padding: 8px;
+
+    table {
+      width: 100%;
+      table-layout: fixed;
+
+      th, td {
+        font-size: 11px;
+        padding: 4px 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        height: 2.5em;
+        line-height: 1.2;
+      }
+
+      th {
+        font-size: 12px;
+      }
+
+      .hidden-col {
+        display: none;
+      }
+
+      td button {
+        font-size: 10px;
+        padding: 3px 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+    }
+  }
+}
+
+@media (max-width: 400px) {
+  .table-container table th,
+  .table-container table td {
+    font-size: 10px;
+    padding: 3px;
+    height: 2em;
+  }
+
+  .table-container table td button {
+    font-size: 9px;
+    padding: 2px 4px;
   }
 }

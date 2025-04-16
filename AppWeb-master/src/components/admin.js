@@ -47,10 +47,23 @@ const Admin = () => {
         const data = usuarioDoc.data();
         const solicitudDoc = solicitudesSnapshot.docs.find((s) => s.id === usuarioDoc.id);
         
+        // Aquí debería evaluarse si está activo, pendiente o inactivo
+        const fechaInicio = data.fechaDeInicio?.toDate();
+        const fechaVencimiento = data.fechaDeVencimiento?.toDate();
+        const hoy = new Date();
+  
+        let estado = "pendiente"; // Valor por defecto
+  
+        if (fechaInicio && fechaVencimiento && hoy >= fechaInicio && hoy <= fechaVencimiento) {
+          estado = "activo";
+        } else if (fechaVencimiento && hoy > fechaVencimiento) {
+          estado = "inactivo";
+        }
+  
         return {
           id: usuarioDoc.id,
           ...data,
-          estado: solicitudDoc ? "pendiente" : "inactivo", // No se evalúa activación acá
+          estado: estado, // Aquí asignamos el estado calculado
         };
       });
   
@@ -60,6 +73,7 @@ const Admin = () => {
   
     obtenerUsuarios();
   }, []);
+  
   
   
   
@@ -103,12 +117,6 @@ const Admin = () => {
       confirmButtonText: "Sí, cambiar",
       cancelButtonText: "Cancelar",
     });
-    if (!confirmed.isConfirmed) return;
-    Swal.fire({
-      title: "Cambiando rol del usuario...",
-      allowOutsideClick: false,
-      didOpen: () => Swal.showLoading(),
-    });
     
     try {
       const userRef = doc(db, "usuarios", id);
@@ -118,7 +126,13 @@ const Admin = () => {
         console.error("Error: El usuario no existe.");
         return;
       }
+      if (!confirmed.isConfirmed) return;
       
+      Swal.fire({
+        title: "Cambiando rol del usuario...",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+      });
       const nuevoRol = userSnap.data().role === "user" ? "admin" : "user";
       await updateDoc(userRef, { role: nuevoRol });
       Swal.fire("Rol cambiado", "", "success");
@@ -143,75 +157,55 @@ const Admin = () => {
     const fechaAjustada = valor === "" ? null : Timestamp.fromDate(ajustarFechaBuenosAires(valor));
     const hoy = new Date();
     const confirmed = await Swal.fire({
-          title: "¿Eliminar imagen?",
-          text: "Esta acción no se puede deshacer.",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "Sí, eliminar",
-          cancelButtonText: "Cancelar",
-        });
-    if (!confirmed.isConfirmed)return;
+      title: "¿Modificar fecha?",
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, modificar",
+      cancelButtonText: "Cancelar",
+    });
+    if (!confirmed.isConfirmed) return;
+    
     try {
       const userRef = doc(db, "usuarios", id);
       await updateDoc(userRef, {
         [campo]: fechaAjustada
       });
   
+      // Verificamos el estado luego de modificar las fechas
       const usuarioDoc = await getDoc(userRef);
       const data = usuarioDoc.data();
-  
-      const fechaInicio = data.fechaDeInicio?.toDate?.();
-      const fechaVencimiento = data.fechaDeVencimiento?.toDate?.();
-  
+      const fechaInicio = data.fechaDeInicio?.toDate();
+      const fechaVencimiento = data.fechaDeVencimiento?.toDate();
       let estado = "inactivo";
-      let fechasActualizadas = {};
   
-      const solicitudRef = doc(db, "solicitudes", id);
-      const solicitudDoc = await getDoc(solicitudRef);
-  
-      if (solicitudDoc.exists()) {
-        if (fechaInicio && fechaVencimiento && hoy >= fechaInicio && hoy <= fechaVencimiento) {
-          estado = "activo";
-        } else if (fechaVencimiento && hoy > fechaVencimiento) {
-          // vencido: eliminamos solicitud y reseteamos fechas
-          await deleteDoc(solicitudRef);
-          await updateDoc(userRef, {
-            fechaDeInicio: null,
-            fechaDeVencimiento: null,
-          });
-          estado = "inactivo";
-          fechasActualizadas = {
-            fechaDeInicio: null,
-            fechaDeVencimiento: null,
-          };
-        } else {
-          estado = "pendiente";
-        }
+      if (fechaInicio && fechaVencimiento && hoy >= fechaInicio && hoy <= fechaVencimiento) {
+        estado = "activo";
+      } else if (fechaVencimiento && hoy > fechaVencimiento) {
+        await deleteDoc(doc(db, "solicitudes", id)); // Eliminar solicitud si está vencido
+        estado = "inactivo";
+      } else {
+        estado = "pendiente";
       }
   
-      await updateDoc(userRef, {
-        estado: estado
-      });
+      // Actualizamos el estado local
+      await updateDoc(userRef, { estado });
   
-      // 🔄 Actualizamos el estado local con estado y fechas actualizadas (si las hay)
       setUsuarios((prev) =>
         prev.map((user) =>
           user.id === id
-            ? {
-                ...user,
-                ...data,
-                ...fechasActualizadas,
-                estado,
-              }
+            ? { ...user, estado, fechaInicio, fechaVencimiento }
             : user
         )
       );
-      Swal.fire("Fecha y estado actualizados correctamente","","success");
+  
+      Swal.fire("Fecha y estado actualizados correctamente", "", "success");
     } catch (error) {
       console.error("Error al actualizar:", error);
       Swal.fire("Error", "No se pudo actualizar las fechas", "error");
     }
   };
+  
   
   
 
@@ -262,14 +256,14 @@ const Admin = () => {
         <table>
           <thead>
             <tr>
-              <th>Rol</th>
+              <th className="hidden-col">Rol</th>
               <th>Nombre</th>
-              <th>Email</th>
-              <th>Localidad</th>
+              <th className="hidden-col">Email</th>
+              <th >Localidad</th>
               <th>Estado</th>
               <th>Fecha de Inicio</th>
               <th>Fecha de Vencimiento</th>
-              <th>Imagen</th>
+              <th className="hidden-col">Imagen</th>
               <th>Detalles</th>
               <th></th>
             </tr>
@@ -286,10 +280,10 @@ const Admin = () => {
               .map((usuario) => (
                 <tr key={usuario.id}>
                   
-                  <td><button className="buttonAdmin"  onClick={()=>CambioDeRol(usuario.id)}>{usuario.role}</button></td>
+                  <td className="hidden-col"><button className="buttonAdmin"  onClick={()=>CambioDeRol(usuario.id)}>{usuario.role}</button></td>
                   <td>{usuario.nombre} {usuario.apellido}</td>
-                  <td>{usuario.email}</td>
-                  <td>{usuario.localidad}</td>
+                  <td className="hidden-col">{usuario.email}</td>
+                  <td >{usuario.localidad}</td>
                   <td>{usuario.role==="user"? usuario.estado:"Es admin"}</td>
                   <td>
                     <input
@@ -319,7 +313,7 @@ const Admin = () => {
                     />
                   </td>
 
-                  <td>{localStorage.getItem(`uploadedImage_${usuario?.email}`)?(
+                  <td className="hidden-col">{localStorage.getItem(`uploadedImage_${usuario?.email}`)?(
                       <button 
                         className="buttonAdmin" 
                         onClick={()=>handelImageClick(localStorage.getItem(`uploadedImage_${usuario?.email}`))} 
@@ -335,7 +329,7 @@ const Admin = () => {
                   </td>
                   <td>
                     <button className="botonBajaUsuario" onClick={() => ManejarBaja(usuario.id)}>
-                      Dar de baja
+                     Borrar
                     </button>
                   </td>
                 </tr>

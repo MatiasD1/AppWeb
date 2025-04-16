@@ -95,6 +95,8 @@ const UserDetails = () =>{
           <input type="text" defaultValue={user.marcaAuto} />
           <label>Modelo de Auto:</label>
           <input type="text" defaultValue={user.modeloAuto} />
+          <label>Teléfono:</label>
+          <input type="text" defaultValue={user.telefono} />
         </form>
           <div className="vehicleSection">
             <h4>Foto del vehículo:</h4>
@@ -110,7 +112,7 @@ const UserDetails = () =>{
               <p>
                 El usuario {user.nombre} {user.apellido} no realizó una solicitud
               </p>
-            ) : !solicitud.turno ? (
+            ) : !solicitud.turno  && !solicitud.reserva?(
               <div>
                 <label>Turno para {user.nombre} {user.apellido}</label>
                 <input
@@ -150,7 +152,7 @@ const UserDetails = () =>{
                 })}
                 .
               </p>
-            ) : (
+            ) : user.estado!=="activo"?(
               <p>
                 El usuario {user.nombre} {user.apellido} tiene turno para{" "}
                 {solicitud.reserva.toDate().toLocaleString("es-AR", {
@@ -161,7 +163,23 @@ const UserDetails = () =>{
                   minute: "2-digit",
                 })}
               </p>
-            )}
+            ):(
+            <p> El usuario {user.nombre} {user.apellido} tiene publicidad activa desde 
+              {user.fechaDeInicio.toDate().toLocaleString("es-AR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+              })} hasta 
+              {user.fechaDeVencimiento.toDate().toLocaleString("es-AR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+            </p>)}
           </div>
       </div>
     );
