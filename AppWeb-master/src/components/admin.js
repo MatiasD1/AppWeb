@@ -41,11 +41,9 @@ const Admin = () => {
   useEffect(() => {
     const obtenerUsuarios = async () => {
       const usuariosSnapshot = await getDocs(collection(db, "usuarios"));
-      const solicitudesSnapshot = await getDocs(collection(db, "solicitudes"));
   
       const usuariosData = usuariosSnapshot.docs.map((usuarioDoc) => {
         const data = usuarioDoc.data();
-        const solicitudDoc = solicitudesSnapshot.docs.find((s) => s.id === usuarioDoc.id);
         
         // Aquí debería evaluarse si está activo, pendiente o inactivo
         const fechaInicio = data.fechaDeInicio?.toDate();
@@ -259,10 +257,10 @@ const Admin = () => {
               <th className="hidden-col">Rol</th>
               <th>Nombre</th>
               <th className="hidden-col">Email</th>
-              <th >Localidad</th>
+              <th>Localidad</th>
               <th>Estado</th>
-              <th>Fecha de Inicio</th>
-              <th>Fecha de Vencimiento</th>
+              <th className="hidden-col-sm">Fecha de Inicio</th>
+              <th className="hidden-col-sm">Fecha de Vencimiento</th>
               <th className="hidden-col">Imagen</th>
               <th>Detalles</th>
               <th></th>
@@ -283,9 +281,9 @@ const Admin = () => {
                   <td className="hidden-col"><button className="buttonAdmin"  onClick={()=>CambioDeRol(usuario.id)}>{usuario.role}</button></td>
                   <td>{usuario.nombre} {usuario.apellido}</td>
                   <td className="hidden-col">{usuario.email}</td>
-                  <td >{usuario.localidad}</td>
+                  <td>{usuario.localidad}</td>
                   <td>{usuario.role==="user"? usuario.estado:"Es admin"}</td>
-                  <td>
+                  <td className="hidden-col-sm">
                     <input
                       type="date"
                       name="fechaDeInicio"
@@ -298,7 +296,7 @@ const Admin = () => {
                     />
                   </td>
 
-                  <td>
+                  <td className="hidden-col-sm">
                     <input
                       type="date"
                       name="fechaDeVencimiento"
@@ -325,11 +323,15 @@ const Admin = () => {
                     }
                   </td>
                   <td>
-                    <button className="buttonAdmin" disabled={usuario.role==="admin"} onClick={()=>navigate("/userDetails",{state:{id:usuario.id}})}>Ver más</button>
+                    <button className="buttonAdmin" disabled={usuario.role==="admin"} onClick={()=>navigate("/userDetails",{state:{id:usuario.id}})}>
+                      <span className="icon">🔍</span>
+                      <span className="text">Ver más</span>
+                    </button>
                   </td>
                   <td>
                     <button className="botonBajaUsuario" onClick={() => ManejarBaja(usuario.id)}>
-                     Borrar
+                    <span className="icon">❌</span>
+                    <span className="text">Borrar</span>
                     </button>
                   </td>
                 </tr>

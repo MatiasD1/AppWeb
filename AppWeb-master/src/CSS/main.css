@@ -622,6 +622,10 @@ input:focus {
   .table-container {
     padding: 8px;
 
+    .hidden-col-sm{
+      display: none;
+    }
+
     table {
       width: 100%;
       table-layout: fixed;
@@ -644,13 +648,31 @@ input:focus {
         display: none;
       }
 
+      td button .text {
+        display: none; 
+      }
+
+      td button .icon {
+        display: inline;
+      }
+
       td button {
         font-size: 10px;
-        padding: 3px 5px;
+        background: none;       /* quita el fondo */
+        border: none;           /* elimina el borde */
+        outline: none;          /* elimina el contorno al hacer focus */
+        box-shadow: none;       /* elimina sombras */
+        padding: 0;             /* elimina espacio interno */
+        margin: 0;              /* por si hereda margen */
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 100%;
+        height: 26px;
+        width: 26px;
       }
     }
   }
@@ -667,6 +689,10 @@ input:focus {
   .table-container table td button {
     font-size: 9px;
     padding: 2px 4px;
+  }
+
+  .hidden-col-sm{
+    display: none;
   }
 }
 
