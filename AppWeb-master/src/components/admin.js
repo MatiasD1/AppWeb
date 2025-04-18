@@ -330,8 +330,8 @@ const Admin = () => {
                   </td>
                   <td>
                     <button className="botonBajaUsuario" onClick={() => ManejarBaja(usuario.id)}>
-                    <span className="icon">❌</span>
-                    <span className="text">Borrar</span>
+                      <span className="icon">❌</span>
+                      <span className="text">Borrar</span>
                     </button>
                   </td>
                 </tr>

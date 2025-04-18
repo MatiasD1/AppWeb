@@ -97,6 +97,22 @@ const UserDetails = () =>{
           <input type="text" defaultValue={user.modeloAuto} />
           <label>Teléfono:</label>
           <input type="text" defaultValue={user.telefono} />
+          {user.estado==="activo"? (
+            <div>
+              <label>Fecha de Inicio:</label>
+              <input 
+                type="date"
+                defaultValue={user.fechaDeInicio.toDate().toISOString().split("T")[0]}
+              />
+              <label>Fecha de Vencimiento:</label>
+              <input 
+                type="date"
+                defaultValue={user.fechaDeVencimiento.toDate().toISOString().split("T")[0]}
+              />
+            </div>
+          ):(
+            <p>El usuario aún no tiene publicidad activa</p>
+          )}
         </form>
           <div className="vehicleSection">
             <h4>Foto del vehículo:</h4>
