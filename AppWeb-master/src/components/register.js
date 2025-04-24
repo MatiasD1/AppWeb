@@ -25,6 +25,7 @@ const Register = () => {
     aceptaTerminos: false,
     password: "",
     confirmPassword: "",
+    aceptado:false
   });
 
   const [message, setMessage] = useState("");

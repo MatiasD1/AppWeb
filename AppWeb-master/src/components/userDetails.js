@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 import Loading from "./Loading";
 import { Timestamp } from "firebase/firestore";
 import Swal from "sweetalert2";
+import { HandleChangeFecha } from "./handleChangeFecha";
 
 const UserDetails = () =>{
     const [user, setUser] = useState(null);  
@@ -46,7 +47,7 @@ const UserDetails = () =>{
     const imageUser =  localStorage.getItem(`uploadedImage_${user?.email}`);
 
 
-    const HandleChange = async (fecha) => {
+    const HandleTurno = async (fecha) => {
         try {
           const confirmed = await Swal.fire({
                 title: "Guardar Turno?",
@@ -74,6 +75,11 @@ const UserDetails = () =>{
         }
       };
 
+
+      const HandleFechas = async (e, campo) => {
+        const nuevoUser = await HandleChangeFecha(id, campo, e.target.value);
+        if (nuevoUser) setUser(nuevoUser);
+      };
     
     if (loading) return <Loading/>;
     if (!user) return <p>Cargando usuario...</p>
@@ -103,11 +109,13 @@ const UserDetails = () =>{
               <input 
                 type="date"
                 defaultValue={user.fechaDeInicio.toDate().toISOString().split("T")[0]}
+                onChange={(e) => HandleFechas(e, "fechaDeInicio")}            
               />
               <label>Fecha de Vencimiento:</label>
               <input 
                 type="date"
                 defaultValue={user.fechaDeVencimiento.toDate().toISOString().split("T")[0]}
+                onChange={(e) => HandleFechas(e, "fechaDeVencimiento")}                 
               />
             </div>
           ):(
@@ -143,7 +151,7 @@ const UserDetails = () =>{
                     if (nuevoTurno) {
                       const fecha = new Date(nuevoTurno);
                       if (!isNaN(fecha)) {
-                        HandleChange(fecha);
+                        HandleTurno(fecha);
                       } else {
                         alert("Fecha inválida");
                       }
