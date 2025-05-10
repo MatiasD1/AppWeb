@@ -69,7 +69,9 @@ const UserDetails = () =>{
             turno: Timestamp.fromDate(fecha),
             reserva:null
           });
+          
           Swal.fire("Turno guardado", "", "success");
+          return Timestamp.fromDate(fecha);
         } catch (error) {
           console.error("Error al guardar el turno", error);
         }
@@ -151,7 +153,7 @@ const UserDetails = () =>{
                     if (nuevoTurno) {
                       const fecha = new Date(nuevoTurno);
                       if (!isNaN(fecha)) {
-                        HandleTurno(fecha);
+                        HandleTurno(fecha).then((turno)=>{setNuevoTurno(turno);});
                       } else {
                         alert("Fecha inválida");
                       }
