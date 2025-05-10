@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 import Loading from "./Loading";
 import { Timestamp } from "firebase/firestore";
 import Swal from "sweetalert2";
+import { HandleChangeFecha } from "./handleChangeFecha";
 
 const UserDetails = () =>{
     const [user, setUser] = useState(null);  
@@ -46,7 +47,7 @@ const UserDetails = () =>{
     const imageUser =  localStorage.getItem(`uploadedImage_${user?.email}`);
 
 
-    const HandleChange = async (fecha) => {
+    const HandleTurno = async (fecha) => {
         try {
           const confirmed = await Swal.fire({
                 title: "Guardar Turno?",
@@ -68,12 +69,19 @@ const UserDetails = () =>{
             turno: Timestamp.fromDate(fecha),
             reserva:null
           });
+          
           Swal.fire("Turno guardado", "", "success");
+          return Timestamp.fromDate(fecha);
         } catch (error) {
           console.error("Error al guardar el turno", error);
         }
       };
 
+
+      const HandleFechas = async (e, campo) => {
+        const nuevoUser = await HandleChangeFecha(id, campo, e.target.value);
+        if (nuevoUser) setUser(nuevoUser);
+      };
     
     if (loading) return <Loading/>;
     if (!user) return <p>Cargando usuario...</p>
@@ -95,6 +103,26 @@ const UserDetails = () =>{
           <input type="text" defaultValue={user.marcaAuto} />
           <label>Modelo de Auto:</label>
           <input type="text" defaultValue={user.modeloAuto} />
+          <label>Teléfono:</label>
+          <input type="text" defaultValue={user.telefono} />
+          {user.estado==="activo"? (
+            <div>
+              <label>Fecha de Inicio:</label>
+              <input 
+                type="date"
+                defaultValue={user.fechaDeInicio.toDate().toISOString().split("T")[0]}
+                onChange={(e) => HandleFechas(e, "fechaDeInicio")}            
+              />
+              <label>Fecha de Vencimiento:</label>
+              <input 
+                type="date"
+                defaultValue={user.fechaDeVencimiento.toDate().toISOString().split("T")[0]}
+                onChange={(e) => HandleFechas(e, "fechaDeVencimiento")}                 
+              />
+            </div>
+          ):(
+            <p>El usuario aún no tiene publicidad activa</p>
+          )}
         </form>
           <div className="vehicleSection">
             <h4>Foto del vehículo:</h4>
@@ -110,7 +138,7 @@ const UserDetails = () =>{
               <p>
                 El usuario {user.nombre} {user.apellido} no realizó una solicitud
               </p>
-            ) : !solicitud.turno ? (
+            ) : !solicitud.turno  && !solicitud.reserva?(
               <div>
                 <label>Turno para {user.nombre} {user.apellido}</label>
                 <input
@@ -125,7 +153,7 @@ const UserDetails = () =>{
                     if (nuevoTurno) {
                       const fecha = new Date(nuevoTurno);
                       if (!isNaN(fecha)) {
-                        HandleChange(fecha);
+                        HandleTurno(fecha).then((turno)=>{setNuevoTurno(turno);});
                       } else {
                         alert("Fecha inválida");
                       }
@@ -150,7 +178,7 @@ const UserDetails = () =>{
                 })}
                 .
               </p>
-            ) : (
+            ) : user.estado!=="activo"?(
               <p>
                 El usuario {user.nombre} {user.apellido} tiene turno para{" "}
                 {solicitud.reserva.toDate().toLocaleString("es-AR", {
@@ -161,7 +189,23 @@ const UserDetails = () =>{
                   minute: "2-digit",
                 })}
               </p>
-            )}
+            ):(
+            <p> El usuario {user.nombre} {user.apellido} tiene publicidad activa desde 
+              {user.fechaDeInicio.toDate().toLocaleString("es-AR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+              })} hasta 
+              {user.fechaDeVencimiento.toDate().toLocaleString("es-AR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+            </p>)}
           </div>
       </div>
     );

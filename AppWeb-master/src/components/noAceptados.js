@@ -100,10 +100,16 @@ const NoAceptados = () => {
                   <td>{usuario.email}</td>
                   <td>{usuario.localidad}</td>
                   <td>
-                    <button className='button-user one' onClick={() => AceptarUsuario(usuario.id)}>Aceptar</button>
+                    <button className='button-user one' onClick={() => AceptarUsuario(usuario.id)}>
+                      <span className="icon">✅</span>
+                      <span className="text">Aceptar</span>
+                    </button>
                   </td>
                   <td>
-                    <button className='button-user two' onClick={() => RechazarUsuario(usuario.id)}>Rechazar</button>
+                    <button className='button-user two' onClick={() => RechazarUsuario(usuario.id)}>
+                      <span className="icon">❌</span>
+                      <span className="text">Rechazar</span>
+                    </button>
                   </td>
                 </tr>
               ))}

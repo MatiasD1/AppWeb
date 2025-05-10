@@ -52,8 +52,6 @@ const SolicitudTurno = () => {
         return;
       }
 
-      const userRef = doc(db,"usuarios", user.uid);
-      await updateDoc(userRef,{estado:"pendiente"});
       const solicitudRef = doc(db, "solicitudes", user.uid);
 
       Swal.fire({
@@ -68,7 +66,7 @@ const SolicitudTurno = () => {
         fecha: Timestamp.fromDate(new Date()),
         estado: "solicitud pendiente"
       };
-
+      await updateDoc(doc(db,"usuarios",user.uid),{estado:"pendiente"});
       await setDoc(solicitudRef, solicitud);
       setSolicitudEnviada(true); 
       Swal.fire("Solicitud enviada", "", "success");
@@ -94,11 +92,13 @@ const SolicitudTurno = () => {
     
     try {
       const solRef = doc(db,"solicitudes",id);
+      
       await updateDoc(solRef,{
         estado:"turno reservado",
         reserva:solicitud.turno,
         turno:deleteField()
       });
+      
       Swal.fire("Turno reservado", "", "success");
       const updatedSnap = await getDoc(solRef);
       if (updatedSnap.exists()) {
